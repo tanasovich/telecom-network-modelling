@@ -5,7 +5,7 @@ namespace TelecomNetModelling
     public class NetworkValueCalculator
     {
         /// Нужно использовать именно такой PI (20 знаков, после запятой).
-       public  const double PI = 3.14159265358979323846;
+       public const double PI = 3.14159265358979323846;
        
        /// <summary>
        ///  <para>Основа преобразования Фурье. Количество отсчетов на интервале
@@ -13,71 +13,71 @@ namespace TelecomNetModelling
        ///  <para>Используется как размерность входяшей матрицы.</para>
        /// </summary>
        /// <remarks>Старое название - N</remarks>
-       public static int fourierTransformBase;
+       private static int fourierTransformBase;
 
        /// <summary>
        /// Номер максимальной несущей частоты.
        /// </summary>
        /// <remarks>Старое название - n</remarks>
-       public static int carrierFrequencyMaxNumber;
+       private static int carrierFrequencyMaxNumber;
 
        /// <summary>
        /// Количество отсчетов на защитном интервале.
        /// </summary>
        /// <remarks>Старое название - L</remarks>
-       public static int protectionIntervalSamplesNumber;
+       private int protectionIntervalSamplesNumber;
        
        /// <summary>
        /// Номер первого канала.
        /// </summary>
        /// <remarks>Старое название - m</remarks>
-       public static int firstChannelNumber;
+       private int firstChannelNumber;
 
        /// <summary>
        /// Начальная точка отсчета.
        /// </summary>
        /// <remarks>Старое название - from_lt</remarks>
-       public static int firstSample;
+       private int firstSample;
 
        /// <summary>
        /// Конечная точка отсчета.
        /// </summary>
        /// <remarks>Старое название - until_lt</remarks>
-       public static int lastSample;
+       private int lastSample;
 
        /// <summary>
        /// Длительность импульсной реакции. Зависит от размера файла.
        /// </summary>
        /// <remarks>Старое название - R</remarks>
-       public static  int impulseReactionLength;
+       private int impulseReactionLength;
        
        /// <summary>
        /// Вектор импульсных реакций.
        /// </summary>
        /// <remarks>Старое название - g</remarks>
-       public static  double[] impulseReactions = new double[fourierTransformBase];
+       private double[] impulseReactions = new double[fourierTransformBase];
        
        /// <summary>
        /// Вектор мощностей сигналов.
        /// </summary>
        /// <remarks>Старое название - power</remarks>
-       public static  double[] signalPowers = new double[carrierFrequencyMaxNumber];
+       private  double[] signalPowers = new double[carrierFrequencyMaxNumber];
        
        /// <summary>
        /// Маска сигнала.
        /// </summary>
        /// <remarks>Старое название - PSD</remarks>
-       public static  double[] signalMask = new double[carrierFrequencyMaxNumber];
+       private  double[] signalMask = new double[carrierFrequencyMaxNumber];
        
        /// <summary>
        /// Выходной массив чего-то.
        /// </summary>
-       public static  double[,] njus = new double[fourierTransformBase,fourierTransformBase];
+       private  double[,] njus = new double[fourierTransformBase,fourierTransformBase];
        
        /// <summary>
        /// Промежуточный выходной массив.
        /// </summary>
-       public static  double[,] currrentNjus = new double[fourierTransformBase,fourierTransformBase];
+       private  double[,] currrentNjus = new double[fourierTransformBase,fourierTransformBase];
 
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace TelecomNetModelling
         /// <param name="sampleDifference">разница между отсчетами</param>
         /// <returns>корреляция сигнала</returns>
         /// <remarks>Старое название метода - B</remarks>
-        double SignalCorrelation(int sampleDifference)
+        public double SignalCorrelation(int sampleDifference)
         {
             double sum = 0;
             for (int p = 1; p <= carrierFrequencyMaxNumber; p++)
@@ -104,7 +104,7 @@ namespace TelecomNetModelling
         /// <param name="q">еще один какой-то индекс</param>
         /// <param name="sampleCount">количество отсчетов, раньше называлось <i>lt</i></param>
         /// <returns></returns>
-        double Nju(int k, int q, int sampleCount)
+        public double Nju(int k, int q, int sampleCount)
         {
             if (sampleCount == firstSample)
             {
@@ -227,7 +227,7 @@ namespace TelecomNetModelling
         /// <param name="p">индекс?</param>
         /// <returns>мощность помехи</returns>
         /// <remarks>Старое название - Interf</remarks>
-        double InterferationNoisePower(int p)
+        public double InterferationNoisePower(int p)
         {
             double sum = 0;
             for (int k = 0; k <= fourierTransformBase - 1; k++)
@@ -246,7 +246,7 @@ namespace TelecomNetModelling
         /// <param name="p">мощность?</param>
         /// <returns>мощность полезного сигнала</returns>
         /// <remarks>Старое название - Signal</remarks>
-        double SignalPower(int p)
+        public double SignalPower(int p)
         {
             Complex sum = new Complex(); // TODO Возможно, стоит объявить как double.
             Complex  J = new Complex(0, 1);
@@ -265,7 +265,7 @@ namespace TelecomNetModelling
         /// <param name="power">мощность сигнала?</param>
         /// <returns>значение SNR</returns>
         /// <remarks>Старое название - Ratio</remarks>>
-        double SNR(int power)
+        public double SNR(int power)
         {
             double ratio;
             ratio = Math.Sqrt(InterferationNoisePower(power) / SignalPower(power));
