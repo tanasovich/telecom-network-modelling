@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <configuration>
-    <appSettings>
+    <AppSettings>
         <!-- N -->
-        <add key="fourierTransformBase" value="4096" />
+        <fourierTransformBase>4096</fourierTransformBase>
         <!-- n -->
-        <add key="carrierFrequencyMaxNumber" value="2005" />
+        <carrierFrequencyMaxNumber>2005</carrierFrequencyMaxNumber>
         <!-- L -->
-        <add key="protectionIntervalSamplesNumber" value="320" />
+        <protectionIntervalSamplesNumber>320</protectionIntervalSamplesNumber>
         <!-- m -->
-        <add key="firstChannelNumber" value="43" />
+        <firstChannelNumber>43</firstChannelNumber>
         <!-- R -->
-        <add key="impulseReactionLength" value="954" />
+        <impulseReactionLength>954</impulseReactionLength>
         <!-- from_lt -->
-        <add key="firstSample" value="0" />
+        <firstSample>0</firstSample>
         <!-- until_lt -->
-        <add key="lastSample" value="500" />
-    </appSettings>
+        <lastSample>500</lastSample>
+    </AppSettings>
 </configuration>

@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Configuration;
+
 // N. B. Пока что просто берем константы из cpp-файла, описания сообщат позже.
 namespace TelecomNetModelling
 {
@@ -11,6 +13,11 @@ namespace TelecomNetModelling
         static void Main(string[] args)
         {
             // Чтение конфигурациинных параметров.
+            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.SetBasePath(AppDomain.CurrentDomain.BaseDirectory);
+            configurationBuilder.AddXmlFile("appsettings.xml");
+
+            IConfiguration configuration = configurationBuilder.Build();
             
            // Чтение матрицы длительностей импульсных реакций.
 
