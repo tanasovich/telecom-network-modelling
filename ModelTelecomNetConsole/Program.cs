@@ -257,9 +257,10 @@ namespace TelecomNetModelling
             for (int i = 0; i <= fourierTransformBase - 1; i++)
             {
                 // TODO Нужно вернуть реальную часть либо модуль вектора от комплексного числа.
-                sum += impulseReactions[i] * Math.Exp((-J) * 2.0 * PI * (double)(p + firstChannelNumber - 1) * (double)i / (double)fourierTransformBase);
+                // sum += impulseReactions[i] * Math.Exp((-J) * 2.0 * PI * (double)(p + firstChannelNumber - 1) * (double)i / (double)fourierTransformBase);
             }
-            return Math.Pow(Math.Abs(sum), 2) * fourierTransformBase * fourierTransformBase / 2.0 * signalPowers[p + firstChannelNumber - 1];
+            // return Math.Pow(Math.Abs(sum), 2) * fourierTransformBase * fourierTransformBase / 2.0 * signalPowers[p + firstChannelNumber - 1];
+            throw new NotImplementedException("Не готово преобразование комплексного числа в double.");
         }
 
         /// <summary>
