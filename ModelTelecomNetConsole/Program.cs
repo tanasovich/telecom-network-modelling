@@ -89,6 +89,7 @@ namespace TelecomNetModelling
         /// </summary>
         /// <param name="sampleDifference">разница между отсчетами</param>
         /// <returns>корреляция сигнала</returns>
+        /// <remarks>Старое название метода - B</remarks>
         double SignalCorrelation(int sampleDifference)
         {
             double sum = 0;
