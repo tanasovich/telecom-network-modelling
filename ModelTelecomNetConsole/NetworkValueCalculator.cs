@@ -163,54 +163,54 @@ namespace TelecomNetModelling
         /// <summary>
         /// Главная функция по расчету чего-то в матрицы nju*
         /// </summary>
-        /// <param name="k">какой-то индекс</param>
-        /// <param name="q">еще один какой-то индекс</param>
-        /// <param name="sampleCount">количество отсчетов, раньше называлось <i>lt</i></param>
+        /// <param name="k">первый индекс импульсной реакции</param>
+        /// <param name="q">второй индекс импульсной реакции</param>
+        /// <param name="currentSample">текущий отсчет, раньше назывался <i>lt</i></param>
         /// <returns></returns>
-        public double Nju(int k, int q, int sampleCount)
+        public double Nju(int k, int q, int currentSample)
         {
-            if (sampleCount == firstSample)
+            if (currentSample == firstSample)
             {
                 double element = 0;
 
-                if (k <= impulseReactionLength - 2 - sampleCount && q <= impulseReactionLength - 2 - sampleCount)
+                if (k <= impulseReactionLength - 2 - currentSample && q <= impulseReactionLength - 2 - currentSample)
                 {
-                    for (int i = k + sampleCount + 1; i <= impulseReactionLength - 1; i++)
+                    for (int i = k + currentSample + 1; i <= impulseReactionLength - 1; i++)
                     {
-                        for (int j = q + sampleCount + 1; j <= impulseReactionLength - 1; j++)
+                        for (int j = q + currentSample + 1; j <= impulseReactionLength - 1; j++)
                         {
                             element += impulseReactions[i] * impulseReactions[j] * SignalCorrelation(k + j - q - i);
                         }
                     }
                     return 2 * element;
                 }
-                else if (k >= fourierTransformBase + protectionIntervalSamplesNumber - sampleCount && q >= fourierTransformBase + protectionIntervalSamplesNumber - sampleCount)
+                else if (k >= fourierTransformBase + protectionIntervalSamplesNumber - currentSample && q >= fourierTransformBase + protectionIntervalSamplesNumber - currentSample)
                 {
-                    for (int i = 0; i <= k + sampleCount - fourierTransformBase - protectionIntervalSamplesNumber; i++)
+                    for (int i = 0; i <= k + currentSample - fourierTransformBase - protectionIntervalSamplesNumber; i++)
                     {
-                        for (int j = 0; j <= q + sampleCount - fourierTransformBase - protectionIntervalSamplesNumber; j++)
+                        for (int j = 0; j <= q + currentSample - fourierTransformBase - protectionIntervalSamplesNumber; j++)
                         {
                             element += impulseReactions[i] * impulseReactions[j] * SignalCorrelation(k + j - q - i);
                         }
                     }
                     return 2 * element;
                 }
-                else if (k <= impulseReactionLength - 2 - sampleCount && q >= fourierTransformBase + protectionIntervalSamplesNumber - sampleCount)
+                else if (k <= impulseReactionLength - 2 - currentSample && q >= fourierTransformBase + protectionIntervalSamplesNumber - currentSample)
                 {
-                    for (int i = k + sampleCount + 1; i <= impulseReactionLength - 1; i++)
+                    for (int i = k + currentSample + 1; i <= impulseReactionLength - 1; i++)
                     {
-                        for (int j = 0; j <= q + sampleCount - fourierTransformBase - protectionIntervalSamplesNumber; j++)
+                        for (int j = 0; j <= q + currentSample - fourierTransformBase - protectionIntervalSamplesNumber; j++)
                         {
                             element += impulseReactions[i] * impulseReactions[j] * SignalCorrelation(2 * fourierTransformBase + protectionIntervalSamplesNumber + k + j - q - i);
                         }
                     }
                     return element;
                 }
-                else if (k >= fourierTransformBase + protectionIntervalSamplesNumber - sampleCount && q <= impulseReactionLength - 2 - sampleCount)
+                else if (k >= fourierTransformBase + protectionIntervalSamplesNumber - currentSample && q <= impulseReactionLength - 2 - currentSample)
                 {
-                    for (int i = 0; i <= k + sampleCount - fourierTransformBase - protectionIntervalSamplesNumber; i++)
+                    for (int i = 0; i <= k + currentSample - fourierTransformBase - protectionIntervalSamplesNumber; i++)
                     {
-                        for (int j = q + sampleCount + 1; j <= impulseReactionLength - 1; j++)
+                        for (int j = q + currentSample + 1; j <= impulseReactionLength - 1; j++)
                         {
                             element += impulseReactions[i] * impulseReactions[j] * SignalCorrelation(2 * fourierTransformBase + protectionIntervalSamplesNumber + q + i - k - j);
                         }
@@ -228,44 +228,44 @@ namespace TelecomNetModelling
                 {
                     double element = 0;
 
-                    if (k <= impulseReactionLength - 2 - sampleCount && q <= impulseReactionLength - 2 - sampleCount)
+                    if (k <= impulseReactionLength - 2 - currentSample && q <= impulseReactionLength - 2 - currentSample)
                     {
-                        for (int i = k + sampleCount + 1; i <= impulseReactionLength - 1; i++)
+                        for (int i = k + currentSample + 1; i <= impulseReactionLength - 1; i++)
                         {
-                            for (int j = q + sampleCount + 1; j <= impulseReactionLength - 1; j++)
+                            for (int j = q + currentSample + 1; j <= impulseReactionLength - 1; j++)
                             {
                                 element += impulseReactions[i] * impulseReactions[j] * SignalCorrelation(k + j - q - i);
                             }
                         }
                         return 2 * element;
                     }
-                    else if (k >= fourierTransformBase + protectionIntervalSamplesNumber - sampleCount && q >= fourierTransformBase + protectionIntervalSamplesNumber - sampleCount)
+                    else if (k >= fourierTransformBase + protectionIntervalSamplesNumber - currentSample && q >= fourierTransformBase + protectionIntervalSamplesNumber - currentSample)
                     {
-                        for (int i = 0; i <= k + sampleCount - fourierTransformBase - protectionIntervalSamplesNumber; i++)
+                        for (int i = 0; i <= k + currentSample - fourierTransformBase - protectionIntervalSamplesNumber; i++)
                         {
-                            for (int j = 0; j <= q + sampleCount - fourierTransformBase - protectionIntervalSamplesNumber; j++)
+                            for (int j = 0; j <= q + currentSample - fourierTransformBase - protectionIntervalSamplesNumber; j++)
                             {
                                 element += impulseReactions[i] * impulseReactions[j] * SignalCorrelation(k + j - q - i);
                             }
                         }
                         return 2 * element;
                     }
-                    else if (k <= impulseReactionLength - 2 - sampleCount && q >= fourierTransformBase + protectionIntervalSamplesNumber - sampleCount)
+                    else if (k <= impulseReactionLength - 2 - currentSample && q >= fourierTransformBase + protectionIntervalSamplesNumber - currentSample)
                     {
-                        for (int i = k + sampleCount + 1; i <= impulseReactionLength - 1; i++)
+                        for (int i = k + currentSample + 1; i <= impulseReactionLength - 1; i++)
                         {
-                            for (int j = 0; j <= q + sampleCount - fourierTransformBase - protectionIntervalSamplesNumber; j++)
+                            for (int j = 0; j <= q + currentSample - fourierTransformBase - protectionIntervalSamplesNumber; j++)
                             {
                                 element += impulseReactions[i] * impulseReactions[j] * SignalCorrelation(2 * fourierTransformBase + protectionIntervalSamplesNumber + k + j - q - i);
                             }
                         }
                         return element;
                     }
-                    else if (k >= fourierTransformBase + protectionIntervalSamplesNumber - sampleCount && q <= impulseReactionLength - 2 - sampleCount)
+                    else if (k >= fourierTransformBase + protectionIntervalSamplesNumber - currentSample && q <= impulseReactionLength - 2 - currentSample)
                     {
-                        for (int i = 0; i <= k + sampleCount - fourierTransformBase - protectionIntervalSamplesNumber; i++)
+                        for (int i = 0; i <= k + currentSample - fourierTransformBase - protectionIntervalSamplesNumber; i++)
                         {
-                            for (int j = q + sampleCount + 1; j <= impulseReactionLength - 1; j++)
+                            for (int j = q + currentSample + 1; j <= impulseReactionLength - 1; j++)
                             {
                                 element += impulseReactions[i] * impulseReactions[j] * SignalCorrelation(2 * fourierTransformBase + protectionIntervalSamplesNumber + q + i - k - j);
                             }
