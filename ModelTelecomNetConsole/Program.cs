@@ -17,12 +17,17 @@ namespace TelecomNetModelling
             configurationBuilder.SetBasePath(AppDomain.CurrentDomain.BaseDirectory);
             configurationBuilder.AddXmlFile("appsettings.xml");
 
-            IConfiguration configuration = configurationBuilder.Build();
-            NetworkValueCalculator calculator = new NetworkValueCalculator(configuration);
-            
-           // Чтение матрицы длительностей импульсных реакций.
+            // Чтение матрицы длительностей импульсных реакций.
 
            // Чтение матрицы спектральной маски.
+
+            IConfiguration configuration = configurationBuilder.Build();
+            NetworkValueCalculator calculator = new NetworkValueCalculator(
+                configuration,
+                Array.Empty<double>(),
+                Array.Empty<double>(),
+                Array.Empty<double>()
+            );
 
            // Запуск расчетов.
            

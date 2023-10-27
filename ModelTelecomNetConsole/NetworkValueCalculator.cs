@@ -56,19 +56,19 @@ namespace TelecomNetModelling
        /// Вектор импульсных реакций.
        /// </summary>
        /// <remarks>Старое название - g</remarks>
-       private double[] impulseReactions = new double[fourierTransformBase];
+       private double[] impulseReactions;
        
        /// <summary>
        /// Вектор мощностей сигналов.
        /// </summary>
        /// <remarks>Старое название - power</remarks>
-       private  double[] signalPowers = new double[carrierFrequencyMaxNumber];
+       private  double[] signalPowers;
        
        /// <summary>
        /// Маска сигнала.
        /// </summary>
        /// <remarks>Старое название - PSD</remarks>
-       private  double[] signalMask = new double[carrierFrequencyMaxNumber];
+       private  double[] signalMask;
        
        /// <summary>
        /// Выходной массив чего-то.
@@ -80,7 +80,7 @@ namespace TelecomNetModelling
        /// </summary>
        private  double[,] currrentNjus = new double[fourierTransformBase,fourierTransformBase];
 
-       public NetworkValueCalculator(IConfiguration configuration)
+       public NetworkValueCalculator(IConfiguration configuration, double[] impulseReactions, double[] signalPowers, double[] signalMask)
        {
            fourierTransformBase = int.Parse(configuration["AppSettings:fourierTransformBase"]);
            carrierFrequencyMaxNumber = int.Parse(configuration["AppSettings:carrierFrequencyMaxNumber"]);
@@ -89,6 +89,10 @@ namespace TelecomNetModelling
            firstSample = int.Parse(configuration["AppSettings:firstSample"]);
            lastSample = int.Parse(configuration["AppSettings:lastSample"]);
            impulseReactionLength = int.Parse(configuration["AppSettings:impulseReactionLength"]);
+
+           this.impulseReactions = impulseReactions;
+           this.signalPowers = signalPowers;
+           this.signalMask = signalMask;
        }
 
 
