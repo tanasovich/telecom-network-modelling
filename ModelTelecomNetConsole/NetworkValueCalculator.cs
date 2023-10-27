@@ -248,15 +248,19 @@ namespace TelecomNetModelling
         /// <remarks>Старое название - Signal</remarks>
         public double SignalPower(int p)
         {
-            Complex sum = new Complex(); // TODO Возможно, стоит объявить как double.
-            Complex  J = new Complex(0, 1);
+            Complex sum = new Complex();
+            Complex J = new Complex(0, 1);
             for (int i = 0; i <= fourierTransformBase - 1; i++)
             {
-                // TODO Нужно вернуть реальную часть либо модуль вектора от комплексного числа.
-                // sum += impulseReactions[i] * Math.Exp((-J) * 2.0 * PI * (double)(p + firstChannelNumber - 1) * (double)i / (double)fourierTransformBase);
+                sum += Complex.Multiply(impulseReactions[i],
+                    Complex.Exp(
+                        Complex.Multiply(-J,
+                            PI * (double) (p + firstChannelNumber - 1) * (double) i / (double) fourierTransformBase
+                        )
+                    )
+                );
             }
-            // return Math.Pow(Math.Abs(sum), 2) * fourierTransformBase * fourierTransformBase / 2.0 * signalPowers[p + firstChannelNumber - 1];
-            throw new NotImplementedException("Не готово преобразование комплексного числа в double.");
+            return Math.Pow(Complex.Abs(sum), 2) * fourierTransformBase * fourierTransformBase / 2.0 * signalPowers[p + firstChannelNumber - 1];
         }
 
         /// <summary>
