@@ -18,6 +18,7 @@ namespace TelecomNetModelling
             configurationBuilder.AddXmlFile("appsettings.xml");
 
             IConfiguration configuration = configurationBuilder.Build();
+            NetworkValueCalculator calculator = new NetworkValueCalculator(configuration);
             
            // Чтение матрицы длительностей импульсных реакций.
 

@@ -1,4 +1,5 @@
 using System.Numerics;
+using Microsoft.Extensions.Configuration;
 
 namespace TelecomNetModelling
 {
@@ -78,6 +79,17 @@ namespace TelecomNetModelling
        /// Промежуточный выходной массив.
        /// </summary>
        private  double[,] currrentNjus = new double[fourierTransformBase,fourierTransformBase];
+
+       public NetworkValueCalculator(IConfiguration configuration)
+       {
+           fourierTransformBase = int.Parse(configuration["AppSettings:fourierTransformBase"]);
+           carrierFrequencyMaxNumber = int.Parse(configuration["AppSettings:carrierFrequencyMaxNumber"]);
+           protectionIntervalSamplesNumber = int.Parse(configuration["AppSettings:protectionIntervalSamplesNumber"]);
+           firstChannelNumber = int.Parse(configuration["AppSettings:firstChannelNumber"]);
+           firstSample = int.Parse(configuration["AppSettings:firstSample"]);
+           lastSample = int.Parse(configuration["AppSettings:lastSample"]);
+           impulseReactionLength = int.Parse(configuration["AppSettings:impulseReactionLength"]);
+       }
 
 
         /// <summary>
