@@ -29,7 +29,7 @@ namespace TelecomNetModelling
                 Array.Empty<double>()
             );
 
-           // Запуск расчетов.
+           calculator.Execute();
            
            // Вывод результатов в консоль.
            
