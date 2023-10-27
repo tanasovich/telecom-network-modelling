@@ -95,6 +95,53 @@ namespace TelecomNetModelling
            this.signalMask = signalMask;
        }
 
+       // TODO Нужно ещё выяснить какие данные возвращает функция.
+       /// <summary>
+       /// Фасадный метод, который запускает всю бизнес-логику приложения.
+       /// </summary>
+       /// <exception cref="NotImplementedException">потому что мы еще не
+       /// доделали расчет</exception>
+       public void Execute()
+       {
+           for (int currentSample = firstSample; currentSample <= lastSample; currentSample++)
+           {
+               for (int i = 0; i < fourierTransformBase; i++)
+               {
+                   for (int j = 0; j < fourierTransformBase; j++)
+                   {
+                       if (i >= j)
+                       {
+                           currrentNjus[i, j] = Nju(i, j, currentSample);
+                       }
+                   }
+               }
+
+               // TODO Заполнение нижнего треугольника матрицы можно сделать и
+               // в верхнем цикле.
+               for (int i = 0; i < fourierTransformBase; i++)
+               {
+                   for (int j = 0; j < fourierTransformBase; j++)
+                   {
+                       if (i >= j)
+                       {
+                           njus[i, j] = currrentNjus[i, j];
+                       }
+                       else
+                       {
+                           njus[i, j] = currrentNjus[j, i];
+                       }
+                   }
+               }
+
+               for (int i = 0; i <= carrierFrequencyMaxNumber; i++)
+               {
+                   // TODO Это нужно вывести
+                   double ratio = SNR(i);
+               }
+           }
+           throw new NotImplementedException("Главная функция расчета не готова.");
+       }
+
 
         /// <summary>
         /// Нахождение корреляции сигнала.
