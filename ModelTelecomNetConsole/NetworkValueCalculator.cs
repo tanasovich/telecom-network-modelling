@@ -20,7 +20,7 @@ namespace TelecomNetModelling
        /// Номер максимальной несущей частоты.
        /// </summary>
        /// <remarks>Старое название - n</remarks>
-       private static int carrierFrequencyMaxNumber;
+       private int carrierFrequencyMaxNumber;
 
        /// <summary>
        /// Количество отсчетов на защитном интервале.
