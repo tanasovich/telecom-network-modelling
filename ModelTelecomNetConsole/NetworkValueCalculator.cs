@@ -186,11 +186,11 @@ namespace TelecomNetModelling
         public double InterferationNoisePower(int p)
         {
             double sum = 0;
-            for (int k = 0; k <= fourierTransformBase - 1; k++)
+            for (int i = 0; i < fourierTransformBase; i++)
             {
-                for (int q = 0; q <= fourierTransformBase - 1; q++)
+                for (int j = 0; j < fourierTransformBase; j++)
                 {
-                    sum += njus[k][q] * Math.Cos(2 * PI * (p + firstChannelNumber - 1) * (k - q) / fourierTransformBase);
+                    sum += njus[i][j] * Math.Cos(2 * PI * (p + firstChannelNumber - 1) * (i - j) / fourierTransformBase);
                 }
             }
             return sum;
@@ -206,7 +206,7 @@ namespace TelecomNetModelling
         {
             Complex sum = new Complex();
             Complex J = new Complex(0, 1);
-            for (int i = 0; i <= fourierTransformBase - 1; i++)
+            for (int i = 0; i < fourierTransformBase; i++)
             {
                 sum += Complex.Multiply(impulseReactions[i],
                     Complex.Exp(
