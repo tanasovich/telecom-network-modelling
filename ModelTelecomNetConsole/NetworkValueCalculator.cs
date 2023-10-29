@@ -14,43 +14,43 @@ namespace TelecomNetModelling
        ///  <para>Используется как размерность входяшей матрицы.</para>
        /// </summary>
        /// <remarks>Старое название - N</remarks>
-       private static int fourierTransformBase;
+       private readonly int fourierTransformBase;
 
        /// <summary>
        /// Номер максимальной несущей частоты.
        /// </summary>
        /// <remarks>Старое название - n</remarks>
-       private int carrierFrequencyMaxNumber;
+       private readonly int carrierFrequencyMaxNumber;
 
        /// <summary>
        /// Количество отсчетов на защитном интервале.
        /// </summary>
        /// <remarks>Старое название - L</remarks>
-       private int protectionIntervalSamplesNumber;
+       private readonly int protectionIntervalSamplesNumber;
        
        /// <summary>
        /// Номер первого канала.
        /// </summary>
        /// <remarks>Старое название - m</remarks>
-       private int firstChannelNumber;
+       private readonly int firstChannelNumber;
 
        /// <summary>
        /// Начальная точка отсчета.
        /// </summary>
        /// <remarks>Старое название - from_lt</remarks>
-       private int firstSample;
+       private readonly int firstSample;
 
        /// <summary>
        /// Конечная точка отсчета.
        /// </summary>
        /// <remarks>Старое название - until_lt</remarks>
-       private int lastSample;
+       private readonly int lastSample;
 
        /// <summary>
        /// Длительность импульсной реакции. Зависит от размера файла.
        /// </summary>
        /// <remarks>Старое название - R</remarks>
-       private int impulseReactionLength;
+       private readonly int impulseReactionLength;
        
        /// <summary>
        /// Вектор импульсных реакций.
@@ -69,6 +69,8 @@ namespace TelecomNetModelling
        /// </summary>
        /// <remarks>Старое название - PSD</remarks>
        private List<double> signalMask;
+
+       private readonly NjuCalculator njuCalculator;
        
        /// <summary>
        /// Выходной массив чего-то.
@@ -105,6 +107,12 @@ namespace TelecomNetModelling
                signalPowers.Add(Math.Pow(10, 0.1 * (signalMask[i] + 80)));
            }
 
+           njuCalculator = new NjuCalculator(
+            fourierTransformBase, impulseReactionLength,
+            protectionIntervalSamplesNumber, carrierFrequencyMaxNumber,
+            firstChannelNumber, impulseReactions, signalPowers
+           );
+
            njus = new List<List<double>>(fourierTransformBase);
            currrentNjus = new List<List<double>>(fourierTransformBase);
            currrentNjus = new List<List<double>>(fourierTransformBase);
@@ -115,7 +123,7 @@ namespace TelecomNetModelling
            }
        }
 
-       // TODO Нужно ещё выяснить какие данные возвращает функция.
+       // TODO: Нужно ещё выяснить какие данные возвращает функция.
        /// <summary>
        /// Фасадный метод, который запускает всю бизнес-логику приложения.
        /// </summary>
@@ -129,14 +137,20 @@ namespace TelecomNetModelling
                {
                    for (int j = 0; j < fourierTransformBase; j++)
                    {
-                       if (i >= j)
+                       if (i < j)
                        {
-                           currrentNjus[i][j] = Nju(i, j, currentSample);
+                           continue;
                        }
+                       // XXX: Я не понимаю эту проверку и передачу след. числа по диагонали.
+                       if (currentSample != firstSample && i != fourierTransformBase - 1 && j != fourierTransformBase - 1)
+                       {
+                           currrentNjus[i][j] = njus[i + 1][j + 1];
+                       }
+                       currrentNjus[i][j] = njuCalculator.Nju(i, j, currentSample);
                    }
                }
 
-               // TODO Заполнение нижнего треугольника матрицы можно сделать и
+               // TODO: Заполнение нижнего треугольника матрицы можно сделать и
                // в верхнем цикле.
                for (int i = 0; i < fourierTransformBase; i++)
                {
@@ -161,100 +175,6 @@ namespace TelecomNetModelling
            }
            throw new NotImplementedException("Главная функция расчета не готова.");
        }
-
-
-        /// <summary>
-        /// Нахождение корреляции сигнала.
-        /// </summary>
-        /// <param name="sampleDifference">разница между отсчетами</param>
-        /// <returns>корреляция сигнала</returns>
-        /// <remarks>Старое название метода - B</remarks>
-        public double SignalCorrelation(int sampleDifference)
-        {
-            double sum = 0;
-            for (int p = 1; p <= carrierFrequencyMaxNumber; p++)
-            {
-                sum += signalPowers[p + firstChannelNumber - 1] * Math.Cos(PI * sampleDifference * (p + firstChannelNumber - 1) / carrierFrequencyMaxNumber);
-            }
-            return sum;
-        }
-
-
-        /// <summary>
-        /// Главная функция по расчету чего-то в матрицы nju*
-        /// </summary>
-        /// <param name="k">первый индекс импульсной реакции</param>
-        /// <param name="q">второй индекс импульсной реакции</param>
-        /// <param name="currentSample">текущий отсчет, раньше назывался <i>lt</i></param>
-        /// <returns></returns>
-        public double Nju(int k, int q, int currentSample)
-        {
-            if (currentSample != firstSample && k != fourierTransformBase - 1 && q != fourierTransformBase - 1)
-            {
-                return njus[k + 1][q + 1];
-            }
-
-            double element = 0;
-
-            if (k <= impulseReactionLength - 2 - currentSample && q <= impulseReactionLength - 2 - currentSample)
-            {
-                for (int i = k + currentSample + 1; i <= impulseReactionLength - 1; i++)
-                {
-                    for (int j = q + currentSample + 1; j <= impulseReactionLength - 1; j++)
-                    {
-                        element += WeightedImpulseReactionProduct(i, j, k + j - q - i);
-                    }
-                }
-                return 2 * element;
-            }
-            else if (k >= fourierTransformBase + protectionIntervalSamplesNumber - currentSample && q >= fourierTransformBase + protectionIntervalSamplesNumber - currentSample)
-            {
-                for (int i = 0; i <= k + currentSample - fourierTransformBase - protectionIntervalSamplesNumber; i++)
-                {
-                    for (int j = 0; j <= q + currentSample - fourierTransformBase - protectionIntervalSamplesNumber; j++)
-                    {
-                        element += WeightedImpulseReactionProduct(i, j, k + j - q - i);
-                    }
-                }
-                return 2 * element;
-            }
-            else if (k <= impulseReactionLength - 2 - currentSample && q >= fourierTransformBase + protectionIntervalSamplesNumber - currentSample)
-            {
-                for (int i = k + currentSample + 1; i <= impulseReactionLength - 1; i++)
-                {
-                    for (int j = 0; j <= q + currentSample - fourierTransformBase - protectionIntervalSamplesNumber; j++)
-                    {
-                        element += WeightedImpulseReactionProduct(i, j, 2 * fourierTransformBase + protectionIntervalSamplesNumber + k + j - q - i);
-                    }
-                }
-                return element;
-            }
-            else if (k >= fourierTransformBase + protectionIntervalSamplesNumber - currentSample && q <= impulseReactionLength - 2 - currentSample)
-            {
-                for (int i = 0; i <= k + currentSample - fourierTransformBase - protectionIntervalSamplesNumber; i++)
-                {
-                    for (int j = q + currentSample + 1; j <= impulseReactionLength - 1; j++)
-                    {
-                        element += WeightedImpulseReactionProduct(i, j, 2 * fourierTransformBase + protectionIntervalSamplesNumber + q + i - k - j);
-                    }
-                }
-                return element;
-            }
-            
-            return 0;
-        }
-
-        /// <summary>
-        /// Взвешенное произведение двух импульсных реакций.
-        /// </summary>
-        /// <param name="i">индекс первой имп. реакции</param>
-        /// <param name="j">индекс второй имп. реакции</param>
-        /// <param name="sampleDifference">разница отсчетов</param>
-        /// <returns>взвешенное произведение</returns>
-        private double WeightedImpulseReactionProduct(int i, int j, int sampleDifference)
-        {
-            return impulseReactions[i] * impulseReactions[j] * SignalCorrelation(sampleDifference);
-        }
 
         /// <summary>
         /// Мощность интерференционной помехи.
