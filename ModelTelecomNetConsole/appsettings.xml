@@ -15,9 +15,10 @@
         <firstSample>0</firstSample>
         <!-- until_lt -->
         <lastSample>500</lastSample>
-        <!-- Name of file with input matrix. -->
-        <inputMatrixFilename>input.csv</inputMatrixFilename>
+        <!-- Input files. -->
+        <impulseReactonsFilename>impulse-reactons.data</impulseReactonsFilename>
+        <maskFilename>mask.data</maskFilename>
         <!-- Name of file for results. Maybe, we should have several output files. -->
-        <resultFilename>output.csv</resultFilename>
+        <resultFilename>output.data</resultFilename>
     </AppSettings>
 </configuration>
