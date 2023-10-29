@@ -86,22 +86,32 @@ namespace TelecomNetModelling
 
         private bool FirstCondition(int k, int q, int currentSample)
         {
-            return k <= impulseReactionLength - 2 - currentSample && q <= impulseReactionLength - 2 - currentSample;
+            return LessThanSampleReactionDiff(k, currentSample) && LessThanSampleReactionDiff(q, currentSample);
         }
 
         private bool SecondCondition(int k, int q, int currentSample)
         {
-            return k >= fourierTransformBase + protectionIntervalSamplesNumber - currentSample && q >= fourierTransformBase + protectionIntervalSamplesNumber - currentSample;
+            return NotLessThanFourierWithSamplesDiff(k, currentSample) && NotLessThanFourierWithSamplesDiff(q, currentSample);
         }
 
         private bool ThirdCondition(int k, int q, int currentSample)
         {
-            return k <= impulseReactionLength - 2 - currentSample && q >= fourierTransformBase + protectionIntervalSamplesNumber - currentSample;
+            return LessThanSampleReactionDiff(k, currentSample) && NotLessThanFourierWithSamplesDiff(q, currentSample);
         }
 
         private bool FourthCondition(int k, int q, int currentSample)
         {
-            return k >= fourierTransformBase + protectionIntervalSamplesNumber - currentSample && q <= impulseReactionLength - 2 - currentSample;
+            return NotLessThanFourierWithSamplesDiff(k, currentSample) && LessThanSampleReactionDiff(q, currentSample);
+        }
+
+        private bool LessThanSampleReactionDiff(int x, int currentSample)
+        {
+            return x <= impulseReactionLength - 2 - currentSample;
+        }
+
+        private bool NotLessThanFourierWithSamplesDiff(int x, int currentSample)
+        {
+            return x >= fourierTransformBase + protectionIntervalSamplesNumber - currentSample;
         }
 
         /// <summary>
