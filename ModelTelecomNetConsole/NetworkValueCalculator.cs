@@ -56,43 +56,63 @@ namespace TelecomNetModelling
        /// Вектор импульсных реакций.
        /// </summary>
        /// <remarks>Старое название - g</remarks>
-       private double[] impulseReactions;
+       private List<double> impulseReactions;
        
        /// <summary>
        /// Вектор мощностей сигналов.
        /// </summary>
        /// <remarks>Старое название - power</remarks>
-       private  double[] signalPowers;
+       private List<double> signalPowers;
        
        /// <summary>
        /// Маска сигнала.
        /// </summary>
        /// <remarks>Старое название - PSD</remarks>
-       private  double[] signalMask;
+       private List<double> signalMask;
        
        /// <summary>
        /// Выходной массив чего-то.
        /// </summary>
-       private  double[,] njus = new double[fourierTransformBase,fourierTransformBase];
+       private  List<List<double>> njus;
        
        /// <summary>
        /// Промежуточный выходной массив.
        /// </summary>
-       private  double[,] currrentNjus = new double[fourierTransformBase,fourierTransformBase];
+       private  List<List<double>> currrentNjus;
 
-       public NetworkValueCalculator(IConfiguration configuration, double[] impulseReactions, double[] signalPowers, double[] signalMask)
+       public NetworkValueCalculator(IConfiguration configuration,
+           Dictionary<string, List<double>> inputs)
        {
-           fourierTransformBase = int.Parse(configuration["AppSettings:fourierTransformBase"]);
-           carrierFrequencyMaxNumber = int.Parse(configuration["AppSettings:carrierFrequencyMaxNumber"]);
-           protectionIntervalSamplesNumber = int.Parse(configuration["AppSettings:protectionIntervalSamplesNumber"]);
-           firstChannelNumber = int.Parse(configuration["AppSettings:firstChannelNumber"]);
-           firstSample = int.Parse(configuration["AppSettings:firstSample"]);
-           lastSample = int.Parse(configuration["AppSettings:lastSample"]);
-           impulseReactionLength = int.Parse(configuration["AppSettings:impulseReactionLength"]);
+           fourierTransformBase = int.Parse(
+               configuration["AppSettings:fourierTransformBase"]!);
+           carrierFrequencyMaxNumber = int.Parse(
+               configuration["AppSettings:carrierFrequencyMaxNumber"]!);
+           protectionIntervalSamplesNumber = int.Parse(
+               configuration["AppSettings:protectionIntervalSamplesNumber"]!);
+           firstChannelNumber = int.Parse(
+               configuration["AppSettings:firstChannelNumber"]!);
+           firstSample = int.Parse(configuration["AppSettings:firstSample"]!);
+           lastSample = int.Parse(configuration["AppSettings:lastSample"]!);
+           impulseReactionLength = int.Parse(
+               configuration["AppSettings:impulseReactionLength"]!);
 
-           this.impulseReactions = impulseReactions;
-           this.signalPowers = signalPowers;
-           this.signalMask = signalMask;
+           impulseReactions = inputs["impulseReactions"];
+           signalMask = inputs["signalMask"];
+
+           signalPowers = new List<double>();
+           for (int i = 0; i < firstChannelNumber + carrierFrequencyMaxNumber + 1; i++)
+           {
+               signalPowers.Add(Math.Pow(10, 0.1 * (signalMask[i] + 80)));
+           }
+
+           njus = new List<List<double>>(fourierTransformBase);
+           currrentNjus = new List<List<double>>(fourierTransformBase);
+           currrentNjus = new List<List<double>>(fourierTransformBase);
+           for (int i = 0; i < fourierTransformBase; i++)
+           {
+               njus[i] = new List<double>(fourierTransformBase);
+               currrentNjus[i] = new List<double>(fourierTransformBase);
+           }
        }
 
        // TODO Нужно ещё выяснить какие данные возвращает функция.
@@ -111,7 +131,7 @@ namespace TelecomNetModelling
                    {
                        if (i >= j)
                        {
-                           currrentNjus[i, j] = Nju(i, j, currentSample);
+                           currrentNjus[i][j] = Nju(i, j, currentSample);
                        }
                    }
                }
@@ -124,11 +144,11 @@ namespace TelecomNetModelling
                    {
                        if (i >= j)
                        {
-                           njus[i, j] = currrentNjus[i, j];
+                           njus[i][j] = currrentNjus[i][j];
                        }
                        else
                        {
-                           njus[i, j] = currrentNjus[j, i];
+                           njus[i][j] = currrentNjus[j][i];
                        }
                    }
                }
@@ -171,7 +191,7 @@ namespace TelecomNetModelling
         {
             if (currentSample != firstSample && k != fourierTransformBase - 1 && q != fourierTransformBase - 1)
             {
-                return njus[k + 1,q + 1];
+                return njus[k + 1][q + 1];
             }
 
             double element = 0;
@@ -249,7 +269,7 @@ namespace TelecomNetModelling
             {
                 for (int q = 0; q <= fourierTransformBase - 1; q++)
                 {
-                    sum += njus[k,q] * Math.Cos(2 * PI * (p + firstChannelNumber - 1) * (k - q) / fourierTransformBase);
+                    sum += njus[k][q] * Math.Cos(2 * PI * (p + firstChannelNumber - 1) * (k - q) / fourierTransformBase);
                 }
             }
             return sum;
