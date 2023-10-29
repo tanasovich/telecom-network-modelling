@@ -145,6 +145,7 @@ namespace TelecomNetModelling
                        if (currentSample != firstSample && i != fourierTransformBase - 1 && j != fourierTransformBase - 1)
                        {
                            currrentNjus[i][j] = njus[i + 1][j + 1];
+                           continue;
                        }
                        currrentNjus[i][j] = njuCalculator.Nju(i, j, currentSample);
                    }
