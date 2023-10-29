@@ -1,11 +1,13 @@
 using System.Globalization;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 // N. B. Пока что просто берем константы из cpp-файла, описания сообщат позже.
 namespace TelecomNetModelling
 {
     class Program
     {
+        private static ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddSimpleConsole());
         /// Программа расчета для традиционных систем. Пример, файл -
         /// TWP_GFAST_150m_TR.cpp
         /// Для начала, реализовать выбор входных данных только через конфиги.
@@ -15,6 +17,8 @@ namespace TelecomNetModelling
         /// Начать работу с ввода информации (заполнение массивов).
         public static void Main()
         {
+            ILogger logger = loggerFactory.CreateLogger<Program>();
+            logger.LogInformation("I created logger.");
             // Чтение конфигурациинных параметров.
             ConfigurationBuilder configurationBuilder = new();
             configurationBuilder.SetBasePath(
@@ -27,6 +31,10 @@ namespace TelecomNetModelling
             List<double> impulseReactions = ReadPrnFile(
                 configuration["AppSettings:impulseReactionsFilename"]!
             );
+            foreach (double impulse in impulseReactions)
+            {
+                Console.WriteLine(impulse);
+            }
 
             List<double> signalMask = ReadPrnFile(
                 configuration["AppSettings:maskFilename"]!
