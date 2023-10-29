@@ -13,7 +13,7 @@ namespace TelecomNetModelling
         /// возможность
         /// вводить кастомные имена через консоль.
         /// Начать работу с ввода информации (заполнение массивов).
-        static void Main(string[] args)
+        public static void Main()
         {
             // Чтение конфигурациинных параметров.
             ConfigurationBuilder configurationBuilder = new();
@@ -51,7 +51,7 @@ namespace TelecomNetModelling
            // Запись результатов в файл.
         }
 
-        static List<double> ReadPrnFile(string filename)
+        private static List<double> ReadPrnFile(string filename)
         {
             List<double> values = new();
             try
