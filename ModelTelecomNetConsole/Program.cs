@@ -58,7 +58,7 @@ namespace TelecomNetModelling
             {
                 using (StreamReader sr = new StreamReader(@filename))
                 {
-                    string line;
+                    string? line;
                     while ((line = sr.ReadLine()) != null)
                     {
                         string[] text = line.Split(' ');
