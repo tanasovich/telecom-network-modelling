@@ -7,7 +7,10 @@ namespace TelecomNetModelling
 {
     class Program
     {
-        private static ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddSimpleConsole());
+        private static ILoggerFactory loggerFactory = LoggerFactory.Create(
+            builder => builder.AddSimpleConsole()
+        );
+        private static readonly ILogger logger = loggerFactory.CreateLogger<Program>();
         /// Программа расчета для традиционных систем. Пример, файл -
         /// TWP_GFAST_150m_TR.cpp
         /// Для начала, реализовать выбор входных данных только через конфиги.
@@ -17,9 +20,8 @@ namespace TelecomNetModelling
         /// Начать работу с ввода информации (заполнение массивов).
         public static void Main()
         {
-            ILogger logger = loggerFactory.CreateLogger<Program>();
             logger.LogInformation("I created logger.");
-            // Чтение конфигурациинных параметров.
+
             ConfigurationBuilder configurationBuilder = new();
             configurationBuilder.SetBasePath(
                 AppDomain.CurrentDomain.BaseDirectory
@@ -27,18 +29,17 @@ namespace TelecomNetModelling
             configurationBuilder.AddXmlFile("appsettings.xml");
 
             IConfiguration configuration = configurationBuilder.Build();
+            logger.LogInformation("Загружена конфигурация.");
             
             List<double> impulseReactions = ReadPrnFile(
                 configuration["AppSettings:impulseReactionsFilename"]!
             );
-            foreach (double impulse in impulseReactions)
-            {
-                Console.WriteLine(impulse);
-            }
+            logger.LogInformation("Загружены импульсные реакции.");
 
             List<double> signalMask = ReadPrnFile(
                 configuration["AppSettings:maskFilename"]!
             );
+            logger.LogInformation("Загружена спектральная маска");
 
             Dictionary<string, List<double>> inputs = new()
             {
@@ -52,6 +53,7 @@ namespace TelecomNetModelling
                 inputs
             );
 
+           logger.LogInformation("Начало расчета...");
            calculator.Execute();
            
            // Вывод результатов в консоль.
@@ -66,6 +68,7 @@ namespace TelecomNetModelling
             {
                 using (StreamReader sr = new StreamReader(@filename))
                 {
+                    logger.LogDebug($"Reading data from {filename}");
                     string? line;
                     while ((line = sr.ReadLine()) != null)
                     {
@@ -75,10 +78,11 @@ namespace TelecomNetModelling
                             try
                             {
                                 values.Add(double.Parse(word, CultureInfo.InvariantCulture));
+                                logger.LogTrace($"Parsed number {word}");
                             }
                             catch (FormatException)
                             {
-                                Console.WriteLine($"Invalid number data: '{word}'");
+                                logger.LogWarning($"Invalid number data: '{word}'");
                             }
                         }
                     }
