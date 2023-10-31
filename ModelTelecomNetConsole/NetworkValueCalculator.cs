@@ -111,6 +111,7 @@ namespace TelecomNetModelling
            {
                signalPowers.Add(Math.Pow(10, 0.1 * (signalMask[i] + 80)));
            }
+           logger.LogInformation("Рассчитаны мощности сигналов на основе маски.");
 
            njuCalculator = new NjuCalculator(
             fourierTransformBase, impulseReactionLength,
@@ -132,14 +133,14 @@ namespace TelecomNetModelling
        /// <summary>
        /// Фасадный метод, который запускает всю бизнес-логику приложения.
        /// </summary>
-       /// <exception cref="NotImplementedException">потому что мы еще не
-       /// доделали расчет</exception>
        public void Execute()
        {
            for (int currentSample = firstSample; currentSample <= lastSample; currentSample++)
            {
+               logger.LogDebug("Вычисление для LT = {currentSample}", currentSample);
                for (int i = 0; i < fourierTransformBase; i++)
                {
+                   // TODO: Переменной j можно присваивать i, ведь мы считаем только верхний треугольник.
                    for (int j = 0; j < fourierTransformBase; j++)
                    {
                        if (i < j)
@@ -150,14 +151,19 @@ namespace TelecomNetModelling
                        if (currentSample != firstSample && i != fourierTransformBase - 1 && j != fourierTransformBase - 1)
                        {
                            currrentNjus[i][j] = njus[i + 1][j + 1];
+
+                           logger.LogInformation("Выполнены мистическая проверка и выдача элемента по диагонали для LT {currentSample}", currentSample);
+                           logger.LogDebug("Мистические параметры: i = {i}, j = {j}", i, j);
+
                            continue;
                        }
                        currrentNjus[i][j] = njuCalculator.Nju(i, j, currentSample);
+
+                       logger.LogTrace("nju({i}, {j}) = {currentNju}", i, j, currrentNjus[i][j]);
                    }
                }
 
-               // TODO: Заполнение нижнего треугольника матрицы можно сделать и
-               // в верхнем цикле.
+               
                for (int i = 0; i < fourierTransformBase; i++)
                {
                    for (int j = 0; j < fourierTransformBase; j++)
@@ -171,15 +177,19 @@ namespace TelecomNetModelling
                            njus[i][j] = currrentNjus[j][i];
                        }
                    }
+                   Console.WriteLine(string.Join(',', njus[i]));
                }
 
+               List<double> ratios = new();
                for (int i = 0; i <= carrierFrequencyMaxNumber; i++)
                {
-                   // TODO Это нужно вывести
+                   // TODO: Запись в файл
                    double ratio = SNR(i);
+                   ratios.Add(ratio);
+
+                   logger.LogInformation("Несущая частота №{carrier}: SNR = {ratio}", i, ratio);
                }
            }
-           throw new NotImplementedException("Главная функция расчета не готова.");
        }
 
         /// <summary>

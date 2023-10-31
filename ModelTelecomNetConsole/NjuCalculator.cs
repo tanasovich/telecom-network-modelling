@@ -10,6 +10,7 @@ namespace TelecomNetModelling
         private readonly List<double> impulseReactions;
         private readonly List<double> signalPowers;
 
+        // TODO: Передать логгер
         public NjuCalculator(
             int fourierTransformBase, int impulseReactionLength,
             int protectionIntervalSamplesNumber, int carrierFrequencyMaxNumber,
