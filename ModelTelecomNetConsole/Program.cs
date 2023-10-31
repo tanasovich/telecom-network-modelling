@@ -20,8 +20,6 @@ namespace TelecomNetModelling
         /// Начать работу с ввода информации (заполнение массивов).
         public static void Main()
         {
-            logger.LogInformation("I created logger.");
-
             ConfigurationBuilder configurationBuilder = new();
             configurationBuilder.SetBasePath(
                 AppDomain.CurrentDomain.BaseDirectory
@@ -50,7 +48,8 @@ namespace TelecomNetModelling
 
             NetworkValueCalculator calculator = new(
                 configuration,
-                inputs
+                inputs,
+                loggerFactory.CreateLogger<NetworkValueCalculator>()
             );
 
            logger.LogInformation("Начало расчета...");

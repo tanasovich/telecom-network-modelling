@@ -1,5 +1,6 @@
 using System.Numerics;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace TelecomNetModelling
 {
@@ -7,6 +8,8 @@ namespace TelecomNetModelling
     {
         /// Нужно использовать именно такой PI (20 знаков, после запятой).
        public const double PI = 3.14159265358979323846;
+
+       private readonly ILogger logger;
        
        /// <summary>
        ///  <para>Основа преобразования Фурье. Количество отсчетов на интервале
@@ -83,8 +86,10 @@ namespace TelecomNetModelling
        private  List<List<double>> currrentNjus;
 
        public NetworkValueCalculator(IConfiguration configuration,
-           Dictionary<string, List<double>> inputs)
+           Dictionary<string, List<double>> inputs, ILogger logger)
        {
+           this.logger = logger;
+           
            fourierTransformBase = int.Parse(
                configuration["AppSettings:fourierTransformBase"]!);
            carrierFrequencyMaxNumber = int.Parse(
