@@ -8,7 +8,9 @@ namespace TelecomNetModelling
     class Program
     {
         private static ILoggerFactory loggerFactory = LoggerFactory.Create(
-            builder => builder.AddSimpleConsole()
+            builder => builder.
+                SetMinimumLevel(LogLevel.Debug).
+                AddSimpleConsole()
         );
         private static readonly ILogger logger = loggerFactory.CreateLogger<Program>();
         /// Программа расчета для традиционных систем. Пример, файл -
@@ -81,7 +83,7 @@ namespace TelecomNetModelling
                             }
                             catch (FormatException)
                             {
-                                logger.LogWarning($"Invalid number data: '{word}'");
+                                logger.LogWarning("Invalid number data: '{word}' in {filename}", word, filename);
                             }
                         }
                     }
