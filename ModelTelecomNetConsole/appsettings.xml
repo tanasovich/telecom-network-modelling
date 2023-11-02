@@ -2,21 +2,21 @@
 <configuration>
     <AppSettings>
         <!-- N -->
-        <fourierTransformBase>4096</fourierTransformBase>
+        <fourierTransformBase>512</fourierTransformBase>
         <!-- n -->
-        <carrierFrequencyMaxNumber>2005</carrierFrequencyMaxNumber>
+        <carrierFrequencyMaxNumber>200</carrierFrequencyMaxNumber>
         <!-- L -->
-        <protectionIntervalSamplesNumber>320</protectionIntervalSamplesNumber>
+        <protectionIntervalSamplesNumber>32</protectionIntervalSamplesNumber>
         <!-- m -->
-        <firstChannelNumber>43</firstChannelNumber>
+        <firstChannelNumber>30</firstChannelNumber>
         <!-- R -->
-        <impulseReactionLength>954</impulseReactionLength>
+        <impulseReactionLength>60</impulseReactionLength>
         <!-- from_lt -->
         <firstSample>0</firstSample>
         <!-- until_lt -->
-        <lastSample>500</lastSample>
+        <lastSample>150</lastSample>
         <!-- Input files. -->
-        <impulseReactonsFilename>impulse-reactons.data</impulseReactonsFilename>
+        <impulseReactionsFilename>impulse-reactions.data</impulseReactionsFilename>
         <maskFilename>mask.data</maskFilename>
         <!-- Name of file for results. Maybe, we should have several output files. -->
         <resultFilename>output.data</resultFilename>
