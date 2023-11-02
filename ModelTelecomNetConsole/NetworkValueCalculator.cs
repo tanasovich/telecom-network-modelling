@@ -121,11 +121,15 @@ namespace TelecomNetModelling
 
            njus = new List<List<double>>(fourierTransformBase);
            currrentNjus = new List<List<double>>(fourierTransformBase);
-           currrentNjus = new List<List<double>>(fourierTransformBase);
            for (int i = 0; i < fourierTransformBase; i++)
            {
-               njus[i] = new List<double>(fourierTransformBase);
-               currrentNjus[i] = new List<double>(fourierTransformBase);
+               njus.Add(new List<double>(fourierTransformBase));
+               currrentNjus.Add(new List<double>(fourierTransformBase));
+               for (int j = 0; j < fourierTransformBase; j++)
+               {
+                   njus[i].Add(default);
+                   currrentNjus[i].Add(default);
+               }
            }
        }
 
@@ -163,7 +167,7 @@ namespace TelecomNetModelling
                    }
                }
 
-               
+               // NOTE: Ни в коем случае не заполнять матрицу при расчете.
                for (int i = 0; i < fourierTransformBase; i++)
                {
                    for (int j = 0; j < fourierTransformBase; j++)
