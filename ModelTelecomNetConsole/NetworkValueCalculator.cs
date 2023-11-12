@@ -250,7 +250,7 @@ namespace TelecomNetModelling
                 sum += Complex.Multiply(impulseReactions[i],
                     Complex.Exp(
                         Complex.Multiply(-J,
-                            PI * (double) (p + firstChannelNumber - 1) * (double) i / (double) fourierTransformBase
+                            2.0 * PI * (double) (p + firstChannelNumber - 1) * (double) i / (double) fourierTransformBase
                         )
                     )
                 );
