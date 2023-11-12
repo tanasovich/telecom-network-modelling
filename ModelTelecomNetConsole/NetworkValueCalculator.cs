@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Numerics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -199,7 +200,7 @@ namespace TelecomNetModelling
                        }
                        else
                        {
-                           writer.Write(" {0}", ratio);
+                           writer.Write(" {0}", ratio.ToString(CultureInfo.InvariantCulture));
                        }
                    }
 
