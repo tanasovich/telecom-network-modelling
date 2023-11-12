@@ -202,7 +202,7 @@ namespace TelecomNetModelling
                    {
                        if (firstEntry)
                        {
-                           writer.Write(ratio);
+                           writer.Write(ratio.ToString(CultureInfo.InvariantCulture));
                            firstEntry = false;
                        }
                        else
