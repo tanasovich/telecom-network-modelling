@@ -56,10 +56,6 @@ namespace TelecomNetModelling
 
            logger.LogInformation("Начало расчета...");
            calculator.Execute();
-           
-           // Вывод результатов в консоль.
-           
-           // Запись результатов в файл.
         }
 
         private static List<double> ReadPrnFile(string filename)

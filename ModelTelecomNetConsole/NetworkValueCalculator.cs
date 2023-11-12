@@ -184,12 +184,24 @@ namespace TelecomNetModelling
                    Console.WriteLine(string.Join(',', njus[i]));
                }
 
-               List<double> ratios = new();
+               bool firstEntry = true;
                for (int i = 0; i <= carrierFrequencyMaxNumber; i++)
                {
                    // TODO: Запись в файл
                    double ratio = SNR(i);
-                   ratios.Add(ratio);
+
+                   using (StreamWriter writer = new StreamWriter($"interf{currentSample}", true))
+                   {
+                       if (firstEntry)
+                       {
+                           writer.Write(ratio);
+                           firstEntry = false;
+                       }
+                       else
+                       {
+                           writer.Write(" {0}", ratio);
+                       }
+                   }
 
                    logger.LogInformation("Несущая частота №{carrier}: SNR = {ratio}", i, ratio);
                }
