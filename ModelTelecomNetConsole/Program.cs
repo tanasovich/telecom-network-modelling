@@ -30,6 +30,9 @@ namespace TelecomNetModelling
 
             IConfiguration configuration = configurationBuilder.Build();
             logger.LogInformation("Загружена конфигурация.");
+
+            logger.LogInformation("Подготовка окружения для сохранения результатов.");
+            Directory.CreateDirectory(configuration["AppSettings:resultsDirectory"]!);
             
             List<double> impulseReactions = ReadPrnFile(
                 configuration["AppSettings:impulseReactionsFilename"]!

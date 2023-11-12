@@ -74,6 +74,11 @@ namespace TelecomNetModelling
        /// <remarks>Старое название - PSD</remarks>
        private List<double> signalMask;
 
+       /// <summary>
+       ///  Путь к директории с результатами расчетов.
+       /// </summary>
+       private readonly string resultsDirectory;
+
        private readonly NjuCalculator njuCalculator;
        
        /// <summary>
@@ -106,6 +111,8 @@ namespace TelecomNetModelling
 
            impulseReactions = inputs["impulseReactions"];
            signalMask = inputs["signalMask"];
+
+           resultsDirectory = configuration["AppSettings:resultsDirectory"]!;
 
            signalPowers = new List<double>();
            for (int i = 0; i < firstChannelNumber + carrierFrequencyMaxNumber + 1; i++)
@@ -191,7 +198,7 @@ namespace TelecomNetModelling
                    // TODO: Запись в файл
                    double ratio = SNR(i);
 
-                   using (StreamWriter writer = new StreamWriter($"interf{currentSample}", true))
+                   using (StreamWriter writer = new StreamWriter(Path.Combine(resultsDirectory, $"interf{currentSample}"), true))
                    {
                        if (firstEntry)
                        {

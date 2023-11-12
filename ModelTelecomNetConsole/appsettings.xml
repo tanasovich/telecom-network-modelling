@@ -16,9 +16,9 @@
         <!-- until_lt -->
         <lastSample>150</lastSample>
         <!-- Input files. -->
-        <impulseReactionsFilename>impulse-reactions.data</impulseReactionsFilename>
-        <maskFilename>mask.data</maskFilename>
-        <!-- Name of file for results. Maybe, we should have several output files. -->
-        <resultFilename>output.data</resultFilename>
+        <impulseReactionsFilename>impulse-reactions</impulseReactionsFilename>
+        <maskFilename>mask</maskFilename>
+        <!-- Name of directory for results. -->
+        <resultsDirectory>results</resultsDirectory>
     </AppSettings>
 </configuration>
