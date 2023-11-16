@@ -50,8 +50,12 @@ namespace TelecomNetModelling
                 loggerFactory.CreateLogger<NetworkValueCalculator>()
             );
 
-           logger.LogInformation("Beginning of the calculation...");
+           DateTime computingStart = DateTime.Now;
+           logger.LogInformation("Beginning of the calculation @ {start}", computingStart);
            calculator.Execute();
+           DateTime computingEnd = DateTime.Now;
+           TimeSpan consumedTime = computingEnd - computingStart;
+           logger.LogInformation("End of calculation @ {end} Total consumed time is {total}", computingEnd, consumedTime);
         }
 
         private static List<double> ReadPrnFile(string filename)
