@@ -10,7 +10,7 @@ namespace TelecomNetModelling
         private readonly List<double> impulseReactions;
         private readonly List<double> signalPowers;
 
-        // TODO: Передать логгер
+        // TODO: Set logger
         public NjuCalculator(
             int fourierTransformBase, int impulseReactionLength,
             int protectionIntervalSamplesNumber, int carrierFrequencyMaxNumber,
@@ -27,12 +27,12 @@ namespace TelecomNetModelling
         }
 
         /// <summary>
-        /// Главная функция по расчету чего-то в матрицы nju*
+        /// Compute impulse reactions' integral
         /// </summary>
-        /// <param name="k">первый индекс импульсной реакции</param>
-        /// <param name="q">второй индекс импульсной реакции</param>
-        /// <param name="currentSample">текущий отсчет, раньше назывался <i>lt</i></param>
-        /// <returns></returns>
+        /// <param name="k">first impulse reaction index</param>
+        /// <param name="q">second impulse reaction index</param>
+        /// <param name="currentSample">current sample, canonical name - <i>lt</i></param>
+        /// <returns>imulse reaction integral</returns>
         public double Nju(int k, int q, int currentSample)
         {
             double element = 0;
@@ -116,23 +116,23 @@ namespace TelecomNetModelling
         }
 
         /// <summary>
-        /// Взвешенное произведение двух импульсных реакций.
+        /// Weighted product of two impulse reactions
         /// </summary>
-        /// <param name="i">индекс первой имп. реакции</param>
-        /// <param name="j">индекс второй имп. реакции</param>
-        /// <param name="sampleDifference">разница отсчетов</param>
-        /// <returns>взвешенное произведение</returns>
+        /// <param name="i">first impulse reaction index</param>
+        /// <param name="j">second impulse reaction index</param>
+        /// <param name="sampleDifference">sample difference</param>
+        /// <returns>weighted product</returns>
         private double WeightedImpulseReactionProduct(int i, int j, int sampleDifference)
         {
             return impulseReactions[i] * impulseReactions[j] * SignalCorrelation(sampleDifference);
         }
 
         /// <summary>
-        /// Нахождение корреляции сигнала.
+        /// Computes signal correlation
         /// </summary>
-        /// <param name="sampleDifference">разница между отсчетами</param>
-        /// <returns>корреляция сигнала</returns>
-        /// <remarks>Старое название метода - B</remarks>
+        /// <param name="sampleDifference">sample difference</param>
+        /// <returns>signal correlation</returns>
+        /// <remarks>Canonical name - <i>B</i></remarks>
         public double SignalCorrelation(int sampleDifference)
         {
             double sum = 0;
