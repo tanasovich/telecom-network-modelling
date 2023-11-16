@@ -1,17 +1,21 @@
-# Моделирование интерференционных помех
+# Modelling of interference noises
 
-Моделирование интерференционных помех по исходным данным и вывод SNR показателей.
-Расчет выполняется для _традиционных_ систем.
+Interference noise modelling using given data from configs and files. Produces **signal to noise** (SNR) results.
+Performes calculation for *traditonal* systems.
 
-## Вввод
+## Input
 
-Передача входных данных выполняется с помощью файла `appsettings.xml` Также приложение
-ожидает два файла:
-- импульсные реакции
-- спектральная маска
+To send input data, use file-based configuration approach. Check `appsettings.xml` file.
 
-Каждый файл представляет собой список чисел, разделенных одним пробелом.
+### Traditional systems' extra data
 
-### Вывод
+Application requires two files:
 
-SNR показатели будут выведены в текстовые файлы (для каждого LT отдельный файл).
+- impulse reactions
+- spectral mask
+
+Each file consists of list of numbers (one line). Single space is used as data separator
+
+## Output
+
+SNR values would be saved into text files. Each LT would have separate file with SNR array.
