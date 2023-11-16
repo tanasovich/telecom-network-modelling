@@ -2,7 +2,6 @@ using System.Globalization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-// N. B. Пока что просто берем константы из cpp-файла, описания сообщат позже.
 namespace TelecomNetModelling
 {
     class Program
@@ -13,13 +12,7 @@ namespace TelecomNetModelling
                 AddSimpleConsole()
         );
         private static readonly ILogger logger = loggerFactory.CreateLogger<Program>();
-        /// Программа расчета для традиционных систем. Пример, файл -
-        /// TWP_GFAST_150m_TR.cpp
-        /// Для начала, реализовать выбор входных данных только через конфиги.
-        /// Ввводные файлы должны быть прописаны в конфигах, а также должна быть
-        /// возможность
-        /// вводить кастомные имена через консоль.
-        /// Начать работу с ввода информации (заполнение массивов).
+        
         public static void Main()
         {
             ConfigurationBuilder configurationBuilder = new();
@@ -29,20 +22,20 @@ namespace TelecomNetModelling
             configurationBuilder.AddXmlFile("appsettings.xml");
 
             IConfiguration configuration = configurationBuilder.Build();
-            logger.LogInformation("Загружена конфигурация.");
+            logger.LogInformation("Configuration data is loaded.");
 
-            logger.LogInformation("Подготовка окружения для сохранения результатов.");
+            logger.LogInformation("Environment preparation for results storing.");
             Directory.CreateDirectory(configuration["AppSettings:resultsDirectory"]!);
             
             List<double> impulseReactions = ReadPrnFile(
                 configuration["AppSettings:impulseReactionsFilename"]!
             );
-            logger.LogInformation("Загружены импульсные реакции.");
+            logger.LogInformation("Loaded impulse reactions.");
 
             List<double> signalMask = ReadPrnFile(
                 configuration["AppSettings:maskFilename"]!
             );
-            logger.LogInformation("Загружена спектральная маска");
+            logger.LogInformation("Loaded spectral mask.");
 
             Dictionary<string, List<double>> inputs = new()
             {
@@ -57,7 +50,7 @@ namespace TelecomNetModelling
                 loggerFactory.CreateLogger<NetworkValueCalculator>()
             );
 
-           logger.LogInformation("Начало расчета...");
+           logger.LogInformation("Beginning of the calculation...");
            calculator.Execute();
         }
 
