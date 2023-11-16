@@ -1,7 +1,7 @@
 # Modelling of interference noises
 
 Interference noise modelling using given data from configs and files. Produces **signal to noise** (SNR) results.
-Performes calculation for *traditonal* systems.
+Performs calculation for *traditonal* systems.
 
 ## Input
 
