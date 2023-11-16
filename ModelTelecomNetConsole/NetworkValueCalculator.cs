@@ -158,7 +158,9 @@ namespace TelecomNetModelling
        {
            for (int currentSample = firstSample; currentSample <= lastSample; currentSample++)
            {
-               logger.LogDebug("Calculating LT = {currentSample}", currentSample);
+               DateTime sampleComputeStart = DateTime.Now;
+               logger.LogInformation("Calculating LT = {currentSample} @ {start}", currentSample, sampleComputeStart);
+
                for (int i = 0; i < fourierTransformBase; i++)
                {
                    // TODO: j could be initialized by i. We traverse top triangle only.
@@ -222,8 +224,13 @@ namespace TelecomNetModelling
                        }
                    }
 
-                   logger.LogInformation("Carrier frequency №{carrier}: SNR = {ratio}", i, ratio);
+                   logger.LogDebug("Carrier frequency №{carrier}: SNR = {ratio}", i, ratio);
                }
+
+               DateTime sampleComputeEnd = DateTime.Now;
+               TimeSpan consumedBySample = sampleComputeEnd - sampleComputeStart;
+               logger.LogInformation("Calculation for LT = {sample} is done @ {end}", currentSample, sampleComputeEnd);
+               logger.LogInformation("LT = {sample} consumed {time}", currentSample, consumedBySample);
            }
        }
 
