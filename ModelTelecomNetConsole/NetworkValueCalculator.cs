@@ -7,87 +7,87 @@ namespace TelecomNetModelling
 {
     public class NetworkValueCalculator
     {
-        /// Нужно использовать именно такой PI (20 знаков, после запятой).
+        // Accuracy of built-in PI constant is not enough.
        public const double PI = 3.14159265358979323846;
 
        private readonly ILogger logger;
        
        /// <summary>
-       ///  <para>Основа преобразования Фурье. Количество отсчетов на интервале
-       ///  ортогональности.</para>
-       ///  <para>Используется как размерность входяшей матрицы.</para>
+       ///  <para>Fourier transformation base. The number of samples
+       ///  at orthogonal interval.</para>
+       ///  <para>Used as size of input matrix.</para>
        /// </summary>
-       /// <remarks>Старое название - N</remarks>
+       /// <remarks>Canonical name - <i>N</i></remarks>
        private readonly int fourierTransformBase;
 
        /// <summary>
-       /// Номер максимальной несущей частоты.
+       /// The number of maximum carrier frequency.
        /// </summary>
-       /// <remarks>Старое название - n</remarks>
+       /// <remarks>Canonical name - <i>n</i></remarks>
        private readonly int carrierFrequencyMaxNumber;
 
        /// <summary>
-       /// Количество отсчетов на защитном интервале.
+       /// The number of samples at proctecting interval.
        /// </summary>
-       /// <remarks>Старое название - L</remarks>
+       /// <remarks>Canonical name - <i>L</i></remarks>
        private readonly int protectionIntervalSamplesNumber;
        
        /// <summary>
-       /// Номер первого канала.
+       /// First channel number.
        /// </summary>
-       /// <remarks>Старое название - m</remarks>
+       /// <remarks>Canonical name - <i>m</i></remarks>
        private readonly int firstChannelNumber;
 
        /// <summary>
-       /// Начальная точка отсчета.
+       /// Starting point.
        /// </summary>
-       /// <remarks>Старое название - from_lt</remarks>
+       /// <remarks>Canonical name - <i>from_lt</i></remarks>
        private readonly int firstSample;
 
        /// <summary>
-       /// Конечная точка отсчета.
+       /// Ending point.
        /// </summary>
-       /// <remarks>Старое название - until_lt</remarks>
+       /// <remarks>Canonical name - <i>until_lt</i></remarks>
        private readonly int lastSample;
 
        /// <summary>
-       /// Длительность импульсной реакции. Зависит от размера файла.
+       /// Impulse reaction length. Value depends on file size.
        /// </summary>
-       /// <remarks>Старое название - R</remarks>
+       /// <remarks>Canonical name - <i>R</i></remarks>
        private readonly int impulseReactionLength;
        
        /// <summary>
-       /// Вектор импульсных реакций.
+       /// Impulse reactions' list.
        /// </summary>
-       /// <remarks>Старое название - g</remarks>
+       /// <remarks>Canonical name - <i>g</i></remarks>
        private List<double> impulseReactions;
        
        /// <summary>
-       /// Вектор мощностей сигналов.
+       /// Signal powers' list.
        /// </summary>
-       /// <remarks>Старое название - power</remarks>
+       /// <remarks>Canonical name - <i>power</i></remarks>
        private List<double> signalPowers;
        
        /// <summary>
-       /// Маска сигнала.
+       /// Signal mask.
        /// </summary>
-       /// <remarks>Старое название - PSD</remarks>
+       /// <remarks>Canonical name - <i>PSD</i></remarks>
        private List<double> signalMask;
 
        /// <summary>
-       ///  Путь к директории с результатами расчетов.
+       ///  Path to file results. Relative to working directory.
        /// </summary>
        private readonly string resultsDirectory;
 
        private readonly NjuCalculator njuCalculator;
        
        /// <summary>
-       /// Выходной массив чего-то.
+       /// Interferation model matrix for previous sample.
        /// </summary>
        private  List<List<double>> njus;
        
        /// <summary>
-       /// Промежуточный выходной массив.
+       /// Interferation model matrix for current sample.
        /// </summary>
        private  List<List<double>> currrentNjus;
 
@@ -129,7 +129,7 @@ namespace TelecomNetModelling
            {
                signalPowers.Add(Math.Pow(10, 0.1 * (signalMask[i] + 80)));
            }
-           logger.LogInformation("Рассчитаны мощности сигналов на основе маски.");
+           logger.LogInformation("Calculated sinal powers (using mask).");
 
            njuCalculator = new NjuCalculator(
             fourierTransformBase, impulseReactionLength,
@@ -151,41 +151,43 @@ namespace TelecomNetModelling
            }
        }
 
-       // TODO: Нужно ещё выяснить какие данные возвращает функция.
        /// <summary>
-       /// Фасадный метод, который запускает всю бизнес-логику приложения.
+       /// Facade method. Performs whole business logic.
        /// </summary>
        public void Execute()
        {
            for (int currentSample = firstSample; currentSample <= lastSample; currentSample++)
            {
-               logger.LogDebug("Вычисление для LT = {currentSample}", currentSample);
+               logger.LogDebug("Calculating LT = {currentSample}", currentSample);
                for (int i = 0; i < fourierTransformBase; i++)
                {
-                   // TODO: Переменной j можно присваивать i, ведь мы считаем только верхний треугольник.
+                   // TODO: j could be initialized by i. We traverse top triangle only.
                    for (int j = 0; j < fourierTransformBase; j++)
                    {
                        if (i < j)
                        {
                            continue;
                        }
-                       // XXX: Я не понимаю эту проверку и передачу след. числа по диагонали.
+                       
+                       // XXX: Nobody understands this check and action. Don't try to modify this section
                        if (currentSample != firstSample && i != fourierTransformBase - 1 && j != fourierTransformBase - 1)
                        {
                            currrentNjus[i][j] = njus[i + 1][j + 1];
 
-                           logger.LogInformation("Выполнены мистическая проверка и выдача элемента по диагонали для LT {currentSample}", currentSample);
-                           logger.LogDebug("Мистические параметры: i = {i}, j = {j}", i, j);
+                           logger.LogTrace("Mystical check is done. Take bottom-right element from previous Nju matrix LT {currentSample}", currentSample);
+                           logger.LogTrace("Mystical check indexes: i = {i}, j = {j}", i, j);
 
                            continue;
                        }
+                       
                        currrentNjus[i][j] = njuCalculator.Nju(i, j, currentSample);
 
                        logger.LogTrace("nju({i}, {j}) = {currentNju}", i, j, currrentNjus[i][j]);
                    }
                }
 
-               // NOTE: Ни в коем случае не заполнять матрицу при расчете.
+               // NOTE: To "mirror" matrix triangles, we use separate(!) for loops.
+               // It's non-destructive approach, until I receive proper consultation from scientists.
                for (int i = 0; i < fourierTransformBase; i++)
                {
                    for (int j = 0; j < fourierTransformBase; j++)
@@ -205,7 +207,6 @@ namespace TelecomNetModelling
                bool firstEntry = true;
                for (int i = 0; i <= carrierFrequencyMaxNumber; i++)
                {
-                   // TODO: Запись в файл
                    double ratio = SNR(i);
 
                    using (StreamWriter writer = new StreamWriter(Path.Combine(resultsDirectory, $"interf{currentSample}"), true))
@@ -221,17 +222,17 @@ namespace TelecomNetModelling
                        }
                    }
 
-                   logger.LogInformation("Несущая частота №{carrier}: SNR = {ratio}", i, ratio);
+                   logger.LogInformation("Carrier frequency №{carrier}: SNR = {ratio}", i, ratio);
                }
            }
        }
 
         /// <summary>
-        /// Мощность интерференционной помехи.
+        /// The power of iterference noise
         /// </summary>
-        /// <param name="p">индекс?</param>
-        /// <returns>мощность помехи</returns>
-        /// <remarks>Старое название - Interf</remarks>
+        /// <param name="p">signal power</param>
+        /// <returns>noise power</returns>
+        /// <remarks>Canonical name - <i>Interf</i></remarks>
         public double InterferationNoisePower(int p)
         {
             double sum = 0;
@@ -246,11 +247,11 @@ namespace TelecomNetModelling
         }
 
         /// <summary>
-        /// Расчет мощности полезного сигнала.
+        /// The power of active signal.
         /// </summary>
-        /// <param name="p">мощность?</param>
-        /// <returns>мощность полезного сигнала</returns>
-        /// <remarks>Старое название - Signal</remarks>
+        /// <param name="p">power</param>
+        /// <returns>active signal power</returns>
+        /// <remarks>Canonical name - <i>Signal</i></remarks>
         public double SignalPower(int p)
         {
             Complex sum = new Complex();
@@ -269,11 +270,11 @@ namespace TelecomNetModelling
         }
 
         /// <summary>
-        /// Соотношение сигнал/шум.
+        /// Signal-to-noise ratio.
         /// </summary>
-        /// <param name="power">мощность сигнала?</param>
-        /// <returns>значение SNR</returns>
-        /// <remarks>Старое название - Ratio</remarks>>
+        /// <param name="power">power</param>
+        /// <returns>SNR ration</returns>
+        /// <remarks>Canonical name - <i>Ratio</i></remarks>>
         public double SNR(int power)
         {
             double ratio;
