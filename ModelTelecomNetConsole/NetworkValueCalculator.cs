@@ -158,7 +158,7 @@ namespace TelecomNetModelling
        {
            for (int currentSample = firstSample; currentSample <= lastSample; currentSample++)
            {
-               logger.LogDebug("Calculating LT = {currentSample}", currentSample);
+               logger.LogInformation("Calculating LT = {currentSample}", currentSample);
                for (int i = 0; i < fourierTransformBase; i++)
                {
                    // TODO: j could be initialized by i. We traverse top triangle only.
@@ -222,7 +222,7 @@ namespace TelecomNetModelling
                        }
                    }
 
-                   logger.LogInformation("Carrier frequency №{carrier}: SNR = {ratio}", i, ratio);
+                   logger.LogDebug("Carrier frequency №{carrier}: SNR = {ratio}", i, ratio);
                }
            }
        }

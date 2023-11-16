@@ -8,7 +8,7 @@ namespace TelecomNetModelling
     {
         private static ILoggerFactory loggerFactory = LoggerFactory.Create(
             builder => builder.
-                SetMinimumLevel(LogLevel.Debug).
+                SetMinimumLevel(LogLevel.Information).
                 AddSimpleConsole()
         );
         private static readonly ILogger logger = loggerFactory.CreateLogger<Program>();
