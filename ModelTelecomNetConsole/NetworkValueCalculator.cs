@@ -163,14 +163,8 @@ namespace TelecomNetModelling
 
                for (int i = 0; i < fourierTransformBase; i++)
                {
-                   // TODO: j could be initialized by i. We traverse top triangle only.
-                   for (int j = 0; j < fourierTransformBase; j++)
+                   for (int j = i; j < fourierTransformBase; j++)
                    {
-                       if (i < j)
-                       {
-                           continue;
-                       }
-                       
                        // XXX: Nobody understands this check and action. Don't try to modify this section
                        if (currentSample != firstSample && i != fourierTransformBase - 1 && j != fourierTransformBase - 1)
                        {
