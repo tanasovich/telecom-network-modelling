@@ -197,7 +197,6 @@ namespace TelecomNetModelling
                            njus[i][j] = currrentNjus[j][i];
                        }
                    }
-                   Console.WriteLine(string.Join(',', njus[i]));
                }
 
                bool firstEntry = true;
