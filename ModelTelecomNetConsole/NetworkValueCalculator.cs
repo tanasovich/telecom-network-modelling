@@ -114,18 +114,8 @@ namespace TelecomNetModelling
 
            resultsDirectory = configuration["AppSettings:resultsDirectory"]!;
 
-           if (signalMask.Count < firstChannelNumber + carrierFrequencyMaxNumber + 1)
-           {
-               logger.LogError(
-                    "Signal mask length {mask} is not enough to generate {boundary} powers.",
-                    signalMask.Count,
-                    firstChannelNumber + carrierFrequencyMaxNumber + 1
-                );
-                Environment.Exit(1);
-           }
-
            signalPowers = new List<double>();
-           for (int i = 0; i < firstChannelNumber + carrierFrequencyMaxNumber + 1; i++)
+           for (int i = 0; i < firstChannelNumber + carrierFrequencyMaxNumber; i++)
            {
                signalPowers.Add(Math.Pow(10, 0.1 * (signalMask[i] + 80)));
            }
