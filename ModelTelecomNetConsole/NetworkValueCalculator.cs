@@ -150,9 +150,10 @@ namespace TelecomNetModelling
            {
                DateTime sampleComputeStart = DateTime.Now;
                logger.LogInformation("Calculating LT = {currentSample} @ {start}", currentSample, sampleComputeStart);
-
+               
                for (int i = 0; i < fourierTransformBase; i++)
                {
+                   logger.LogInformation("Current array segment: {index}", i);
                    for (int j = 0; j <= i; j++)
                    {
                        // XXX: Nobody understands this check and action. Don't try to modify this section
