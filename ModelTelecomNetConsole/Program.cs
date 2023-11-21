@@ -1,6 +1,7 @@
-using System.Globalization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+
+using TelecomNetModelling.Readers;
 
 namespace TelecomNetModelling
 {
@@ -12,6 +13,9 @@ namespace TelecomNetModelling
                 AddSimpleConsole()
         );
         private static readonly ILogger logger = loggerFactory.CreateLogger<Program>();
+
+        private static readonly IGivenDataReader givenDataReader = new GivenDataPrnReader(
+            loggerFactory.CreateLogger<IGivenDataReader>());
         
         public static void Main()
         {
@@ -27,12 +31,12 @@ namespace TelecomNetModelling
             logger.LogInformation("Environment preparation for results storing.");
             Directory.CreateDirectory(configuration["AppSettings:resultsDirectory"]!);
             
-            List<double> impulseReactions = ReadPrnFile(
+            List<double> impulseReactions = givenDataReader.ReadFile(
                 configuration["AppSettings:impulseReactionsFilename"]!
             );
             logger.LogInformation("Loaded impulse reactions.");
 
-            List<double> signalMask = ReadPrnFile(
+            List<double> signalMask = givenDataReader.ReadFile(
                 configuration["AppSettings:maskFilename"]!
             );
             logger.LogInformation("Loaded spectral mask.");
@@ -56,40 +60,6 @@ namespace TelecomNetModelling
            DateTime computingEnd = DateTime.Now;
            TimeSpan consumedTime = computingEnd - computingStart;
            logger.LogInformation("End of calculation @ {end} Total consumed time is {total}", computingEnd, consumedTime);
-        }
-
-        private static List<double> ReadPrnFile(string filename)
-        {
-            List<double> values = new();
-            try
-            {
-                using (StreamReader sr = new StreamReader(@filename))
-                {
-                    logger.LogDebug($"Reading data from {filename}");
-                    string? line;
-                    while ((line = sr.ReadLine()) != null)
-                    {
-                        string[] text = line.Split(' ');
-                        foreach (string word in text)
-                        {
-                            try
-                            {
-                                values.Add(double.Parse(word, CultureInfo.InvariantCulture));
-                                logger.LogTrace($"Parsed number {word}");
-                            }
-                            catch (FormatException)
-                            {
-                                logger.LogWarning("Invalid number data: '{word}' in {filename}", word, filename);
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.StackTrace);
-            }
-            return values;
         }
     }
 }
