@@ -153,7 +153,7 @@ namespace TelecomNetModelling
 
                for (int i = 0; i < fourierTransformBase; i++)
                {
-                   for (int j = i; j < fourierTransformBase; j++)
+                   for (int j = 0; j <= i; j++)
                    {
                        // XXX: Nobody understands this check and action. Don't try to modify this section
                        if (currentSample != firstSample && i != fourierTransformBase - 1 && j != fourierTransformBase - 1)
