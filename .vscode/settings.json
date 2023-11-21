@@ -1,0 +1,10 @@
+{
+    "editor.tabSize": 4,
+    "editor.cursorStyle": "block",
+    "editor.fontSize": 14,
+    "editor.rulers": [
+        80, 120
+    ],
+    "editor.fontFamily": "'Fira Code', Consolas, 'Courier New', monospace",
+    "editor.fontLigatures": true
+}
