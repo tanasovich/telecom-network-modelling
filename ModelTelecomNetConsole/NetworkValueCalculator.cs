@@ -93,58 +93,87 @@ namespace TelecomNetModelling
 
        public NetworkValueCalculator(IConfiguration configuration,
            Dictionary<string, List<double>> inputs, ILogger logger)
-       {
-           this.logger = logger;
-           
-           fourierTransformBase = int.Parse(
-               configuration["AppSettings:fourierTransformBase"]!);
-           carrierFrequencyMaxNumber = int.Parse(
-               configuration["AppSettings:carrierFrequencyMaxNumber"]!);
-           protectionIntervalSamplesNumber = int.Parse(
-               configuration["AppSettings:protectionIntervalSamplesNumber"]!);
-           firstChannelNumber = int.Parse(
-               configuration["AppSettings:firstChannelNumber"]!);
-           firstSample = int.Parse(configuration["AppSettings:firstSample"]!);
-           lastSample = int.Parse(configuration["AppSettings:lastSample"]!);
-           impulseReactionLength = int.Parse(
-               configuration["AppSettings:impulseReactionLength"]!);
+        {
+            this.logger = logger;
 
-           impulseReactions = inputs["impulseReactions"];
-           signalMask = inputs["signalMask"];
+            fourierTransformBase = int.Parse(
+                configuration["AppSettings:fourierTransformBase"]!);
+            carrierFrequencyMaxNumber = int.Parse(
+                configuration["AppSettings:carrierFrequencyMaxNumber"]!);
+            protectionIntervalSamplesNumber = int.Parse(
+                configuration["AppSettings:protectionIntervalSamplesNumber"]!);
+            firstChannelNumber = int.Parse(
+                configuration["AppSettings:firstChannelNumber"]!);
+            firstSample = int.Parse(configuration["AppSettings:firstSample"]!);
+            lastSample = int.Parse(configuration["AppSettings:lastSample"]!);
+            impulseReactionLength = int.Parse(
+                configuration["AppSettings:impulseReactionLength"]!);
 
-           resultsDirectory = configuration["AppSettings:resultsDirectory"]!;
+            impulseReactions = inputs["impulseReactions"];
+            signalMask = inputs["signalMask"];
 
-           signalPowers = new List<double>();
-           for (int i = 0; i < firstChannelNumber + carrierFrequencyMaxNumber; i++)
-           {
-               signalPowers.Add(Math.Pow(10, 0.1 * (signalMask[i] + 80)));
-           }
-           logger.LogInformation("Calculated sinal powers (using mask).");
+            resultsDirectory = configuration["AppSettings:resultsDirectory"]!;
 
-           njuCalculator = new NjuCalculator(
-            fourierTransformBase, impulseReactionLength,
-            protectionIntervalSamplesNumber, carrierFrequencyMaxNumber,
-            firstChannelNumber, impulseReactions, signalPowers
-           );
+            GenerateSignalPowers();
 
-           njus = new List<List<double>>(fourierTransformBase);
-           currrentNjus = new List<List<double>>(fourierTransformBase);
-           for (int i = 0; i < fourierTransformBase; i++)
-           {
-               njus.Add(new List<double>(fourierTransformBase));
-               currrentNjus.Add(new List<double>(fourierTransformBase));
-               for (int j = 0; j < fourierTransformBase; j++)
-               {
-                   njus[i].Add(default);
-                   currrentNjus[i].Add(default);
-               }
-           }
-       }
+            njuCalculator = new NjuCalculator(
+             fourierTransformBase, impulseReactionLength,
+             protectionIntervalSamplesNumber, carrierFrequencyMaxNumber,
+             firstChannelNumber, impulseReactions, signalPowers
+            );
 
-       /// <summary>
-       /// Facade method. Performs whole business logic.
-       /// </summary>
-       public void Execute()
+            BuildNjuMatrixes();
+        }
+
+        public NetworkValueCalculator(Dictionary<string, List<double>> inputs, ILogger logger)
+        {
+            fourierTransformBase = 512;
+            carrierFrequencyMaxNumber = 200;
+            protectionIntervalSamplesNumber = 32;
+            firstChannelNumber = 30;
+            impulseReactionLength = 60;
+            firstSample = 0;
+            lastSample = 150;
+            resultsDirectory = "results";
+            this.logger = logger;
+
+            impulseReactions = inputs["impulseReactions"];
+            signalMask = inputs["signalMask"];
+
+            GenerateSignalPowers();
+            BuildNjuMatrixes();
+        }
+
+        private void BuildNjuMatrixes()
+        {
+            njus = new List<List<double>>(fourierTransformBase);
+            currrentNjus = new List<List<double>>(fourierTransformBase);
+            for (int i = 0; i < fourierTransformBase; i++)
+            {
+                njus.Add(new List<double>(fourierTransformBase));
+                currrentNjus.Add(new List<double>(fourierTransformBase));
+                for (int j = 0; j < fourierTransformBase; j++)
+                {
+                    njus[i].Add(default);
+                    currrentNjus[i].Add(default);
+                }
+            }
+        }
+
+        private void GenerateSignalPowers()
+        {
+            signalPowers = new List<double>();
+            for (int i = 0; i < firstChannelNumber + carrierFrequencyMaxNumber; i++)
+            {
+                signalPowers.Add(Math.Pow(10, 0.1 * (signalMask[i] + 80)));
+            }
+            logger.LogInformation("Calculated sinal powers (using mask).");
+        }
+
+        /// <summary>
+        /// Facade method. Performs whole business logic.
+        /// </summary>
+        public void Execute()
        {
            for (int currentSample = firstSample; currentSample <= lastSample; currentSample++)
            {
