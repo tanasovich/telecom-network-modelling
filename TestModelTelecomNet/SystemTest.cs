@@ -11,16 +11,28 @@ namespace TestModelTelecomNet
         public void TestTraditionalSystemComputation()
         {
             // Arrange
-            List<double> expected = LoadDataFrom(Path.Combine("ExpectedData", "Traditional", "interf.txt").ToString());
+            Directory.Delete("results", true);
+            List<double> firstExpected = LoadDataFrom(Path.Combine("ExpectedData", "Traditional", "interf0.txt").ToString());
+            List<double> secondExpected = LoadDataFrom(Path.Combine("ExpectedData", "Traditional", "interf150.txt").ToString());
+
             Dictionary<string, List<double>> inputs = new Dictionary<string, List<double>>();
             inputs["impulseReactions"] = LoadDataFrom(Path.Combine("TestData", "Traditional", "impulse-reactions.txt"));
             inputs["signalMask"] = LoadDataFrom(Path.Combine("TestData", "Traditional", "mask.txt"));
+
+            Directory.CreateDirectory("results");
+
             NetworkValueCalculator calculator = new NetworkValueCalculator(inputs, Mock.Of<ILogger<NetworkValueCalculator>>());
 
             // Act
             calculator.Execute();
 
             // Assert
+            List<double> firstActual = LoadDataFrom(Path.Combine("results", "interf0"));
+            Assert.Equal(firstExpected.Count, firstActual.Count);
+            for (int i = 0; i < firstExpected.Count; i++)
+            {
+                Assert.Equal(firstExpected[i], firstActual[i], 4);
+            }
         }
 
         private List<double> LoadDataFrom(string filename)
