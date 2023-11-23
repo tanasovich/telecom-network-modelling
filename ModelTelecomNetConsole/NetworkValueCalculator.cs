@@ -141,6 +141,13 @@ namespace TelecomNetModelling
             signalMask = inputs["signalMask"];
 
             GenerateSignalPowers();
+
+            njuCalculator = new NjuCalculator(
+             fourierTransformBase, impulseReactionLength,
+             protectionIntervalSamplesNumber, carrierFrequencyMaxNumber,
+             firstChannelNumber, impulseReactions, signalPowers
+            );
+
             BuildNjuMatrixes();
         }
 
