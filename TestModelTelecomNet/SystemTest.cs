@@ -11,7 +11,10 @@ namespace TestModelTelecomNet
         public void TestTraditionalSystemComputation()
         {
             // Arrange
-            Directory.Delete("results", true);
+            if (Directory.Exists("results"))
+            {
+                Directory.Delete("results", true);
+            }
             List<double> firstExpected = LoadDataFrom(Path.Combine("ExpectedData", "Traditional", "interf0.txt").ToString());
             List<double> secondExpected = LoadDataFrom(Path.Combine("ExpectedData", "Traditional", "interf150.txt").ToString());
 
