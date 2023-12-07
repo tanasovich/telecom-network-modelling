@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using ModelTelecomNetConsole;
 using ModelTelecomNetConsole.Interference;
+using ModelTelecomNetConsole.Nju;
 using ModelTelecomNetConsole.Signal;
 
 namespace TelecomNetModelling
@@ -37,7 +38,7 @@ namespace TelecomNetModelling
        /// </summary>
        private readonly string resultsDirectory;
 
-       private readonly NjuCalculator njuCalculator;
+       private readonly INjuCalculator njuCalculator;
        
        /// <summary>
        /// Interferation model matrix for previous sample.
@@ -74,7 +75,7 @@ namespace TelecomNetModelling
 
             GenerateSignalPowers();
 
-            njuCalculator = new NjuCalculator(
+            njuCalculator = new TraditionalNjuCalculator(
              given, impulseReactions, signalPowers
             );
 
@@ -95,7 +96,7 @@ namespace TelecomNetModelling
 
             GenerateSignalPowers();
 
-            njuCalculator = new NjuCalculator(
+            njuCalculator = new TraditionalNjuCalculator(
              given, impulseReactions, signalPowers
             );
 

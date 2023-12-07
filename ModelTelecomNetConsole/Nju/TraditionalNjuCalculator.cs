@@ -1,15 +1,15 @@
 using ModelTelecomNetConsole;
 
-namespace TelecomNetModelling
+namespace ModelTelecomNetConsole.Nju
 {
-    public class NjuCalculator: AccurateMathematic
+    public class TraditionalNjuCalculator : AccurateMathematic, INjuCalculator
     {
         private readonly GivenData given;
         private readonly List<double> impulseReactions;
         private readonly List<double> signalPowers;
 
         // TODO: Set logger
-        public NjuCalculator(
+        public TraditionalNjuCalculator(
             GivenData given, List<double> impulseReactions,
             List<double> signalPowers)
         {
@@ -18,13 +18,7 @@ namespace TelecomNetModelling
             this.signalPowers = signalPowers;
         }
 
-        /// <summary>
-        /// Compute impulse reactions' integral
-        /// </summary>
-        /// <param name="k">first impulse reaction index</param>
-        /// <param name="q">second impulse reaction index</param>
-        /// <param name="currentSample">current sample, canonical name - <i>lt</i></param>
-        /// <returns>imulse reaction integral</returns>
+        /// <inheritdoc cref="INjuCalculator.Nju(int, int, int)"/>
         public double Nju(int k, int q, int currentSample)
         {
             double element = 0;
