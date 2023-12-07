@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using ModelTelecomNetConsole;
 using ModelTelecomNetConsole.Interference;
+using ModelTelecomNetConsole.Signal;
 
 namespace TelecomNetModelling
 {
@@ -51,6 +52,7 @@ namespace TelecomNetModelling
        private  List<List<double>> currrentNjus;
        
        private IInterferenceStrategy InterferenceStrategy;
+       private ISignalStrategy SignalStrategy;
 
        public NetworkValueCalculator(IConfiguration configuration,
            Dictionary<string, List<double>> inputs, ILogger logger)
@@ -81,6 +83,7 @@ namespace TelecomNetModelling
             BuildNjuMatrixes();
 
             InterferenceStrategy = new TraditionalInterferenceStrategy(given, njus);
+            SignalStrategy = new TraditionalSignalStrategy(given, impulseReactions, signalPowers);
         }
 
         public NetworkValueCalculator(Dictionary<string, List<double>> inputs, ILogger logger)
@@ -101,6 +104,7 @@ namespace TelecomNetModelling
             BuildNjuMatrixes();
 
             InterferenceStrategy = new TraditionalInterferenceStrategy(given, njus);
+            SignalStrategy = new TraditionalSignalStrategy(given, impulseReactions, signalPowers);
         }
 
         private void BuildNjuMatrixes()
@@ -207,29 +211,6 @@ namespace TelecomNetModelling
        }
 
         /// <summary>
-        /// The power of active signal.
-        /// </summary>
-        /// <param name="p">power</param>
-        /// <returns>active signal power</returns>
-        /// <remarks>Canonical name - <i>Signal</i></remarks>
-        public double SignalPower(int p)
-        {
-            Complex sum = new Complex();
-            Complex J = new Complex(0, 1);
-            for (int i = 0; i < given.FourierTransformBase; i++)
-            {
-                sum += Complex.Multiply(impulseReactions[i],
-                    Complex.Exp(
-                        Complex.Multiply(-J,
-                            2.0 * PI * (double) (p + given.FirstChannelNumber - 1) * (double) i / (double) given.FourierTransformBase
-                        )
-                    )
-                );
-            }
-            return Math.Pow(Complex.Abs(sum), 2) * given.FourierTransformBase * given.FourierTransformBase / 2.0 * signalPowers[p + given.FirstChannelNumber - 1];
-        }
-
-        /// <summary>
         /// Signal-to-noise ratio.
         /// </summary>
         /// <param name="power">power</param>
@@ -238,7 +219,7 @@ namespace TelecomNetModelling
         public double SNR(int power)
         {
             double ratio;
-            ratio = Math.Sqrt(InterferenceStrategy.InterferationNoisePower(power) / SignalPower(power));
+            ratio = Math.Sqrt(InterferenceStrategy.InterferationNoisePower(power) / SignalStrategy.SignalPower(power));
             return ratio * 100.0;
         }
     }
