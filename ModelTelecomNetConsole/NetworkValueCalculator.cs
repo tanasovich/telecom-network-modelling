@@ -3,6 +3,7 @@ using System.Numerics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using ModelTelecomNetConsole;
+using ModelTelecomNetConsole.Interference;
 
 namespace TelecomNetModelling
 {
@@ -48,6 +49,8 @@ namespace TelecomNetModelling
        /// Interferation model matrix for current sample.
        /// </summary>
        private  List<List<double>> currrentNjus;
+       
+       private IInterferenceStrategy InterferenceStrategy;
 
        public NetworkValueCalculator(IConfiguration configuration,
            Dictionary<string, List<double>> inputs, ILogger logger)
@@ -76,6 +79,8 @@ namespace TelecomNetModelling
             );
 
             BuildNjuMatrixes();
+
+            InterferenceStrategy = new TraditionalInterferenceStrategy(given, njus);
         }
 
         public NetworkValueCalculator(Dictionary<string, List<double>> inputs, ILogger logger)
@@ -94,6 +99,8 @@ namespace TelecomNetModelling
             );
 
             BuildNjuMatrixes();
+
+            InterferenceStrategy = new TraditionalInterferenceStrategy(given, njus);
         }
 
         private void BuildNjuMatrixes()
@@ -200,25 +207,6 @@ namespace TelecomNetModelling
        }
 
         /// <summary>
-        /// The power of iterference noise
-        /// </summary>
-        /// <param name="p">signal power</param>
-        /// <returns>noise power</returns>
-        /// <remarks>Canonical name - <i>Interf</i></remarks>
-        public double InterferationNoisePower(int p)
-        {
-            double sum = 0;
-            for (int i = 0; i < given.FourierTransformBase; i++)
-            {
-                for (int j = 0; j < given.FourierTransformBase; j++)
-                {
-                    sum += njus[i][j] * Math.Cos(2 * PI * (p + given.FirstChannelNumber - 1) * (i - j) / given.FourierTransformBase);
-                }
-            }
-            return sum;
-        }
-
-        /// <summary>
         /// The power of active signal.
         /// </summary>
         /// <param name="p">power</param>
@@ -250,7 +238,7 @@ namespace TelecomNetModelling
         public double SNR(int power)
         {
             double ratio;
-            ratio = Math.Sqrt(InterferationNoisePower(power) / SignalPower(power));
+            ratio = Math.Sqrt(InterferenceStrategy.InterferationNoisePower(power) / SignalPower(power));
             return ratio * 100.0;
         }
     }
