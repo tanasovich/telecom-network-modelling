@@ -35,7 +35,7 @@ namespace TelecomNetModelling
                 {
                     for (int j = q + currentSample + 1; j <= given.ImpulseReactionLength - 1; j++)
                     {
-                        element += WeightedImpulseReactionProduct(i, j, k + j - q - i);
+                        element += FirstEquation(k, q, i, j);
                     }
                 }
                 return 2 * element;
@@ -46,7 +46,7 @@ namespace TelecomNetModelling
                 {
                     for (int j = 0; j <= q + currentSample - given.FourierTransformBase - given.ProtectionIntervalSamplesNumber; j++)
                     {
-                        element += WeightedImpulseReactionProduct(i, j, k + j - q - i);
+                        element += SecondEquation(k, q, i, j);
                     }
                 }
                 return 2 * element;
@@ -57,7 +57,7 @@ namespace TelecomNetModelling
                 {
                     for (int j = 0; j <= q + currentSample - given.FourierTransformBase - given.ProtectionIntervalSamplesNumber; j++)
                     {
-                        element += WeightedImpulseReactionProduct(i, j, 2 * given.FourierTransformBase + given.ProtectionIntervalSamplesNumber + k + j - q - i);
+                        element += ThirdEquation(k, q, i, j);
                     }
                 }
                 return element;
@@ -68,7 +68,7 @@ namespace TelecomNetModelling
                 {
                     for (int j = q + currentSample + 1; j <= given.ImpulseReactionLength - 1; j++)
                     {
-                        element += WeightedImpulseReactionProduct(i, j, 2 * given.FourierTransformBase + given.ProtectionIntervalSamplesNumber + q + i - k - j);
+                        element += FourthEquation(k, q, i, j);
                     }
                 }
                 return element;
@@ -105,6 +105,26 @@ namespace TelecomNetModelling
         private bool NotLessThanFourierWithSamplesDiff(int x, int currentSample)
         {
             return x >= given.FourierTransformBase + given.ProtectionIntervalSamplesNumber - currentSample;
+        }
+
+        private double FirstEquation(int k, int q, int i, int j)
+        {
+            return WeightedImpulseReactionProduct(i, j, k + j - q - i);
+        }
+
+        private double SecondEquation(int k, int q, int i, int j)
+        {
+            return WeightedImpulseReactionProduct(i, j, k + j - q - i);
+        }
+
+        private double ThirdEquation(int k, int q, int i, int j)
+        {
+            return WeightedImpulseReactionProduct(i, j, 2 * given.FourierTransformBase + given.ProtectionIntervalSamplesNumber + k + j - q - i);
+        }
+
+        private double FourthEquation(int k, int q, int i, int j)
+        {
+            return WeightedImpulseReactionProduct(i, j, 2 * given.FourierTransformBase + given.ProtectionIntervalSamplesNumber + q + i - k - j);
         }
 
         /// <summary>
