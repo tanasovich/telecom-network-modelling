@@ -1,27 +1,19 @@
+using ModelTelecomNetConsole;
+
 namespace TelecomNetModelling
 {
     public class NjuCalculator
     {
-        private readonly int fourierTransformBase;
-        private readonly int impulseReactionLength;
-        private readonly int protectionIntervalSamplesNumber;
-        private readonly int carrierFrequencyMaxNumber;
-        private readonly int firstChannelNumber;
+        private readonly GivenData given;
         private readonly List<double> impulseReactions;
         private readonly List<double> signalPowers;
 
         // TODO: Set logger
         public NjuCalculator(
-            int fourierTransformBase, int impulseReactionLength,
-            int protectionIntervalSamplesNumber, int carrierFrequencyMaxNumber,
-            int firstChannelNumber, List<double> impulseReactions,
+            GivenData given, List<double> impulseReactions,
             List<double> signalPowers)
         {
-            this.fourierTransformBase = fourierTransformBase;
-            this.impulseReactionLength = impulseReactionLength;
-            this.protectionIntervalSamplesNumber = protectionIntervalSamplesNumber;
-            this.carrierFrequencyMaxNumber = carrierFrequencyMaxNumber;
-            this.firstChannelNumber = firstChannelNumber;
+            this.given = given;
             this.impulseReactions = impulseReactions;
             this.signalPowers = signalPowers;
         }
@@ -39,9 +31,9 @@ namespace TelecomNetModelling
 
             if (FirstCondition(k, q, currentSample))
             {
-                for (int i = k + currentSample + 1; i <= impulseReactionLength - 1; i++)
+                for (int i = k + currentSample + 1; i <= given.ImpulseReactionLength - 1; i++)
                 {
-                    for (int j = q + currentSample + 1; j <= impulseReactionLength - 1; j++)
+                    for (int j = q + currentSample + 1; j <= given.ImpulseReactionLength - 1; j++)
                     {
                         element += WeightedImpulseReactionProduct(i, j, k + j - q - i);
                     }
@@ -50,9 +42,9 @@ namespace TelecomNetModelling
             }
             else if (SecondCondition(k, q, currentSample))
             {
-                for (int i = 0; i <= k + currentSample - fourierTransformBase - protectionIntervalSamplesNumber; i++)
+                for (int i = 0; i <= k + currentSample - given.FourierTransformBase - given.ProtectionIntervalSamplesNumber; i++)
                 {
-                    for (int j = 0; j <= q + currentSample - fourierTransformBase - protectionIntervalSamplesNumber; j++)
+                    for (int j = 0; j <= q + currentSample - given.FourierTransformBase - given.ProtectionIntervalSamplesNumber; j++)
                     {
                         element += WeightedImpulseReactionProduct(i, j, k + j - q - i);
                     }
@@ -61,22 +53,22 @@ namespace TelecomNetModelling
             }
             else if (ThirdCondition(k, q, currentSample))
             {
-                for (int i = k + currentSample + 1; i <= impulseReactionLength - 1; i++)
+                for (int i = k + currentSample + 1; i <= given.ImpulseReactionLength - 1; i++)
                 {
-                    for (int j = 0; j <= q + currentSample - fourierTransformBase - protectionIntervalSamplesNumber; j++)
+                    for (int j = 0; j <= q + currentSample - given.FourierTransformBase - given.ProtectionIntervalSamplesNumber; j++)
                     {
-                        element += WeightedImpulseReactionProduct(i, j, 2 * fourierTransformBase + protectionIntervalSamplesNumber + k + j - q - i);
+                        element += WeightedImpulseReactionProduct(i, j, 2 * given.FourierTransformBase + given.ProtectionIntervalSamplesNumber + k + j - q - i);
                     }
                 }
                 return element;
             }
             else if (FourthCondition(k, q, currentSample))
             {
-                for (int i = 0; i <= k + currentSample - fourierTransformBase - protectionIntervalSamplesNumber; i++)
+                for (int i = 0; i <= k + currentSample - given.FourierTransformBase - given.ProtectionIntervalSamplesNumber; i++)
                 {
-                    for (int j = q + currentSample + 1; j <= impulseReactionLength - 1; j++)
+                    for (int j = q + currentSample + 1; j <= given.ImpulseReactionLength - 1; j++)
                     {
-                        element += WeightedImpulseReactionProduct(i, j, 2 * fourierTransformBase + protectionIntervalSamplesNumber + q + i - k - j);
+                        element += WeightedImpulseReactionProduct(i, j, 2 * given.FourierTransformBase + given.ProtectionIntervalSamplesNumber + q + i - k - j);
                     }
                 }
                 return element;
@@ -107,12 +99,12 @@ namespace TelecomNetModelling
 
         private bool LessThanSampleReactionDiff(int x, int currentSample)
         {
-            return x <= impulseReactionLength - 2 - currentSample;
+            return x <= given.ImpulseReactionLength - 2 - currentSample;
         }
 
         private bool NotLessThanFourierWithSamplesDiff(int x, int currentSample)
         {
-            return x >= fourierTransformBase + protectionIntervalSamplesNumber - currentSample;
+            return x >= given.FourierTransformBase + given.ProtectionIntervalSamplesNumber - currentSample;
         }
 
         /// <summary>
@@ -136,9 +128,9 @@ namespace TelecomNetModelling
         public double SignalCorrelation(int sampleDifference)
         {
             double sum = 0;
-            for (int p = 1; p <= carrierFrequencyMaxNumber; p++)
+            for (int p = 1; p <= given.CarrierFrequencyMaxNumber; p++)
             {
-                sum += signalPowers[p + firstChannelNumber - 1] * Math.Cos(NetworkValueCalculator.PI * sampleDifference * (p + firstChannelNumber - 1) / carrierFrequencyMaxNumber);
+                sum += signalPowers[p + given.FirstChannelNumber - 1] * Math.Cos(NetworkValueCalculator.PI * sampleDifference * (p + given.FirstChannelNumber - 1) / given.CarrierFrequencyMaxNumber);
             }
             return sum;
         }

@@ -72,9 +72,7 @@ namespace TelecomNetModelling
             GenerateSignalPowers();
 
             njuCalculator = new NjuCalculator(
-             given.FourierTransformBase, given.ImpulseReactionLength,
-             given.ProtectionIntervalSamplesNumber, given.CarrierFrequencyMaxNumber,
-             given.FirstChannelNumber, impulseReactions, signalPowers
+             given, impulseReactions, signalPowers
             );
 
             BuildNjuMatrixes();
@@ -92,9 +90,7 @@ namespace TelecomNetModelling
             GenerateSignalPowers();
 
             njuCalculator = new NjuCalculator(
-             given.FourierTransformBase, given.ImpulseReactionLength,
-             given.ProtectionIntervalSamplesNumber, given.CarrierFrequencyMaxNumber,
-             given.FirstChannelNumber, impulseReactions, signalPowers
+             given, impulseReactions, signalPowers
             );
 
             BuildNjuMatrixes();
