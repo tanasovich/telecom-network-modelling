@@ -1,82 +1,68 @@
-namespace TelecomNetModelling
+using ModelTelecomNetConsole;
+
+namespace ModelTelecomNetConsole.Nju
 {
-    public class NjuCalculator
+    public class TraditionalNjuCalculator : AccurateMathematic, INjuCalculator
     {
-        private readonly int fourierTransformBase;
-        private readonly int impulseReactionLength;
-        private readonly int protectionIntervalSamplesNumber;
-        private readonly int carrierFrequencyMaxNumber;
-        private readonly int firstChannelNumber;
+        private readonly GivenData given;
         private readonly List<double> impulseReactions;
         private readonly List<double> signalPowers;
 
         // TODO: Set logger
-        public NjuCalculator(
-            int fourierTransformBase, int impulseReactionLength,
-            int protectionIntervalSamplesNumber, int carrierFrequencyMaxNumber,
-            int firstChannelNumber, List<double> impulseReactions,
+        public TraditionalNjuCalculator(
+            GivenData given, List<double> impulseReactions,
             List<double> signalPowers)
         {
-            this.fourierTransformBase = fourierTransformBase;
-            this.impulseReactionLength = impulseReactionLength;
-            this.protectionIntervalSamplesNumber = protectionIntervalSamplesNumber;
-            this.carrierFrequencyMaxNumber = carrierFrequencyMaxNumber;
-            this.firstChannelNumber = firstChannelNumber;
+            this.given = given;
             this.impulseReactions = impulseReactions;
             this.signalPowers = signalPowers;
         }
 
-        /// <summary>
-        /// Compute impulse reactions' integral
-        /// </summary>
-        /// <param name="k">first impulse reaction index</param>
-        /// <param name="q">second impulse reaction index</param>
-        /// <param name="currentSample">current sample, canonical name - <i>lt</i></param>
-        /// <returns>imulse reaction integral</returns>
+        /// <inheritdoc cref="INjuCalculator.Nju(int, int, int)"/>
         public double Nju(int k, int q, int currentSample)
         {
             double element = 0;
 
             if (FirstCondition(k, q, currentSample))
             {
-                for (int i = k + currentSample + 1; i <= impulseReactionLength - 1; i++)
+                for (int i = k + currentSample + 1; i <= given.ImpulseReactionLength - 1; i++)
                 {
-                    for (int j = q + currentSample + 1; j <= impulseReactionLength - 1; j++)
+                    for (int j = q + currentSample + 1; j <= given.ImpulseReactionLength - 1; j++)
                     {
-                        element += WeightedImpulseReactionProduct(i, j, k + j - q - i);
+                        element += FirstEquation(k, q, i, j);
                     }
                 }
                 return 2 * element;
             }
             else if (SecondCondition(k, q, currentSample))
             {
-                for (int i = 0; i <= k + currentSample - fourierTransformBase - protectionIntervalSamplesNumber; i++)
+                for (int i = 0; i <= k + currentSample - given.FourierTransformBase - given.ProtectionIntervalSamplesNumber; i++)
                 {
-                    for (int j = 0; j <= q + currentSample - fourierTransformBase - protectionIntervalSamplesNumber; j++)
+                    for (int j = 0; j <= q + currentSample - given.FourierTransformBase - given.ProtectionIntervalSamplesNumber; j++)
                     {
-                        element += WeightedImpulseReactionProduct(i, j, k + j - q - i);
+                        element += SecondEquation(k, q, i, j);
                     }
                 }
                 return 2 * element;
             }
             else if (ThirdCondition(k, q, currentSample))
             {
-                for (int i = k + currentSample + 1; i <= impulseReactionLength - 1; i++)
+                for (int i = k + currentSample + 1; i <= given.ImpulseReactionLength - 1; i++)
                 {
-                    for (int j = 0; j <= q + currentSample - fourierTransformBase - protectionIntervalSamplesNumber; j++)
+                    for (int j = 0; j <= q + currentSample - given.FourierTransformBase - given.ProtectionIntervalSamplesNumber; j++)
                     {
-                        element += WeightedImpulseReactionProduct(i, j, 2 * fourierTransformBase + protectionIntervalSamplesNumber + k + j - q - i);
+                        element += ThirdEquation(k, q, i, j);
                     }
                 }
                 return element;
             }
             else if (FourthCondition(k, q, currentSample))
             {
-                for (int i = 0; i <= k + currentSample - fourierTransformBase - protectionIntervalSamplesNumber; i++)
+                for (int i = 0; i <= k + currentSample - given.FourierTransformBase - given.ProtectionIntervalSamplesNumber; i++)
                 {
-                    for (int j = q + currentSample + 1; j <= impulseReactionLength - 1; j++)
+                    for (int j = q + currentSample + 1; j <= given.ImpulseReactionLength - 1; j++)
                     {
-                        element += WeightedImpulseReactionProduct(i, j, 2 * fourierTransformBase + protectionIntervalSamplesNumber + q + i - k - j);
+                        element += FourthEquation(k, q, i, j);
                     }
                 }
                 return element;
@@ -107,12 +93,32 @@ namespace TelecomNetModelling
 
         private bool LessThanSampleReactionDiff(int x, int currentSample)
         {
-            return x <= impulseReactionLength - 2 - currentSample;
+            return x <= given.ImpulseReactionLength - 2 - currentSample;
         }
 
         private bool NotLessThanFourierWithSamplesDiff(int x, int currentSample)
         {
-            return x >= fourierTransformBase + protectionIntervalSamplesNumber - currentSample;
+            return x >= given.FourierTransformBase + given.ProtectionIntervalSamplesNumber - currentSample;
+        }
+
+        private double FirstEquation(int k, int q, int i, int j)
+        {
+            return WeightedImpulseReactionProduct(i, j, k + j - q - i);
+        }
+
+        private double SecondEquation(int k, int q, int i, int j)
+        {
+            return WeightedImpulseReactionProduct(i, j, k + j - q - i);
+        }
+
+        private double ThirdEquation(int k, int q, int i, int j)
+        {
+            return WeightedImpulseReactionProduct(i, j, 2 * given.FourierTransformBase + given.ProtectionIntervalSamplesNumber + k + j - q - i);
+        }
+
+        private double FourthEquation(int k, int q, int i, int j)
+        {
+            return WeightedImpulseReactionProduct(i, j, 2 * given.FourierTransformBase + given.ProtectionIntervalSamplesNumber + q + i - k - j);
         }
 
         /// <summary>
@@ -136,9 +142,9 @@ namespace TelecomNetModelling
         public double SignalCorrelation(int sampleDifference)
         {
             double sum = 0;
-            for (int p = 1; p <= carrierFrequencyMaxNumber; p++)
+            for (int p = 1; p <= given.CarrierFrequencyMaxNumber; p++)
             {
-                sum += signalPowers[p + firstChannelNumber - 1] * Math.Cos(NetworkValueCalculator.PI * sampleDifference * (p + firstChannelNumber - 1) / carrierFrequencyMaxNumber);
+                sum += signalPowers[p + given.FirstChannelNumber - 1] * Math.Cos(PI * sampleDifference * (p + given.FirstChannelNumber - 1) / given.CarrierFrequencyMaxNumber);
             }
             return sum;
         }
