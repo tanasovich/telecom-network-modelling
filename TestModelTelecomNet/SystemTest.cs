@@ -33,6 +33,12 @@ namespace TestModelTelecomNet
             {
                 Assert.Equal(firstExpected[i], firstActual[i], 4);
             }
+            List<double> secondActual = LoadDataFrom(Path.Combine("results", "interf150"));
+            Assert.Equal(secondExpected.Count, secondActual.Count);
+            for (int i = 0; i < secondExpected.Count; i++)
+            {
+                Assert.Equal(secondExpected[i], secondActual[i], 4);
+            }
         }
 
         private List<double> LoadDataFrom(string filename)
