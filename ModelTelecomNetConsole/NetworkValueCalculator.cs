@@ -10,8 +10,6 @@ namespace TelecomNetModelling
 {
     public class NetworkValueCalculator
     {
-        // Accuracy of built-in PI constant is not enough.
-       public const double PI = 3.14159265358979323846;
 
        private readonly ILogger logger;
        private GivenData given;

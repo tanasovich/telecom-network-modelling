@@ -2,7 +2,7 @@ using ModelTelecomNetConsole;
 
 namespace TelecomNetModelling
 {
-    public class NjuCalculator
+    public class NjuCalculator: AccurateMathematic
     {
         private readonly GivenData given;
         private readonly List<double> impulseReactions;
@@ -130,7 +130,7 @@ namespace TelecomNetModelling
             double sum = 0;
             for (int p = 1; p <= given.CarrierFrequencyMaxNumber; p++)
             {
-                sum += signalPowers[p + given.FirstChannelNumber - 1] * Math.Cos(NetworkValueCalculator.PI * sampleDifference * (p + given.FirstChannelNumber - 1) / given.CarrierFrequencyMaxNumber);
+                sum += signalPowers[p + given.FirstChannelNumber - 1] * Math.Cos(PI * sampleDifference * (p + given.FirstChannelNumber - 1) / given.CarrierFrequencyMaxNumber);
             }
             return sum;
         }
