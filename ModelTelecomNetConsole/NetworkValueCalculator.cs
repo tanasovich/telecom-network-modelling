@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Numerics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using ModelTelecomNetConsole;
 
 namespace TelecomNetModelling
 {
@@ -11,50 +12,7 @@ namespace TelecomNetModelling
        public const double PI = 3.14159265358979323846;
 
        private readonly ILogger logger;
-       
-       /// <summary>
-       ///  <para>Fourier transformation base. The number of samples
-       ///  at orthogonal interval.</para>
-       ///  <para>Used as size of input matrix.</para>
-       /// </summary>
-       /// <remarks>Canonical name - <i>N</i></remarks>
-       private readonly int fourierTransformBase;
-
-       /// <summary>
-       /// The number of maximum carrier frequency.
-       /// </summary>
-       /// <remarks>Canonical name - <i>n</i></remarks>
-       private readonly int carrierFrequencyMaxNumber;
-
-       /// <summary>
-       /// The number of samples at proctecting interval.
-       /// </summary>
-       /// <remarks>Canonical name - <i>L</i></remarks>
-       private readonly int protectionIntervalSamplesNumber;
-       
-       /// <summary>
-       /// First channel number.
-       /// </summary>
-       /// <remarks>Canonical name - <i>m</i></remarks>
-       private readonly int firstChannelNumber;
-
-       /// <summary>
-       /// Starting point.
-       /// </summary>
-       /// <remarks>Canonical name - <i>from_lt</i></remarks>
-       private readonly int firstSample;
-
-       /// <summary>
-       /// Ending point.
-       /// </summary>
-       /// <remarks>Canonical name - <i>until_lt</i></remarks>
-       private readonly int lastSample;
-
-       /// <summary>
-       /// Impulse reaction length. Value depends on file size.
-       /// </summary>
-       /// <remarks>Canonical name - <i>R</i></remarks>
-       private readonly int impulseReactionLength;
+       private GivenData given;
        
        /// <summary>
        /// Impulse reactions' list.
@@ -96,18 +54,15 @@ namespace TelecomNetModelling
         {
             this.logger = logger;
 
-            fourierTransformBase = int.Parse(
-                configuration["AppSettings:fourierTransformBase"]!);
-            carrierFrequencyMaxNumber = int.Parse(
-                configuration["AppSettings:carrierFrequencyMaxNumber"]!);
-            protectionIntervalSamplesNumber = int.Parse(
-                configuration["AppSettings:protectionIntervalSamplesNumber"]!);
-            firstChannelNumber = int.Parse(
-                configuration["AppSettings:firstChannelNumber"]!);
-            firstSample = int.Parse(configuration["AppSettings:firstSample"]!);
-            lastSample = int.Parse(configuration["AppSettings:lastSample"]!);
-            impulseReactionLength = int.Parse(
-                configuration["AppSettings:impulseReactionLength"]!);
+            given = new GivenData(
+                int.Parse(configuration["AppSettings:fourierTransformBase"]!),
+                int.Parse(configuration["AppSettings:carrierFrequencyMaxNumber"]!),
+                int.Parse(configuration["AppSettings:protectionIntervalSamplesNumber"]!),
+                int.Parse(configuration["AppSettings:firstChannelNumber"]!),
+                int.Parse(configuration["AppSettings:firstSample"]!),
+                int.Parse(configuration["AppSettings:lastSample"]!),
+                int.Parse(configuration["AppSettings:impulseReactionLength"]!)
+            );
 
             impulseReactions = inputs["impulseReactions"];
             signalMask = inputs["signalMask"];
@@ -117,9 +72,9 @@ namespace TelecomNetModelling
             GenerateSignalPowers();
 
             njuCalculator = new NjuCalculator(
-             fourierTransformBase, impulseReactionLength,
-             protectionIntervalSamplesNumber, carrierFrequencyMaxNumber,
-             firstChannelNumber, impulseReactions, signalPowers
+             given.FourierTransformBase, given.ImpulseReactionLength,
+             given.ProtectionIntervalSamplesNumber, given.CarrierFrequencyMaxNumber,
+             given.FirstChannelNumber, impulseReactions, signalPowers
             );
 
             BuildNjuMatrixes();
@@ -127,13 +82,7 @@ namespace TelecomNetModelling
 
         public NetworkValueCalculator(Dictionary<string, List<double>> inputs, ILogger logger)
         {
-            fourierTransformBase = 512;
-            carrierFrequencyMaxNumber = 200;
-            protectionIntervalSamplesNumber = 32;
-            firstChannelNumber = 30;
-            impulseReactionLength = 60;
-            firstSample = 0;
-            lastSample = 150;
+            given = new GivenData(512, 200, 32, 30, 0, 150, 60);
             resultsDirectory = "results";
             this.logger = logger;
 
@@ -143,9 +92,9 @@ namespace TelecomNetModelling
             GenerateSignalPowers();
 
             njuCalculator = new NjuCalculator(
-             fourierTransformBase, impulseReactionLength,
-             protectionIntervalSamplesNumber, carrierFrequencyMaxNumber,
-             firstChannelNumber, impulseReactions, signalPowers
+             given.FourierTransformBase, given.ImpulseReactionLength,
+             given.ProtectionIntervalSamplesNumber, given.CarrierFrequencyMaxNumber,
+             given.FirstChannelNumber, impulseReactions, signalPowers
             );
 
             BuildNjuMatrixes();
@@ -153,13 +102,13 @@ namespace TelecomNetModelling
 
         private void BuildNjuMatrixes()
         {
-            njus = new List<List<double>>(fourierTransformBase);
-            currrentNjus = new List<List<double>>(fourierTransformBase);
-            for (int i = 0; i < fourierTransformBase; i++)
+            njus = new List<List<double>>(given.FourierTransformBase);
+            currrentNjus = new List<List<double>>(given.FourierTransformBase);
+            for (int i = 0; i < given.FourierTransformBase; i++)
             {
-                njus.Add(new List<double>(fourierTransformBase));
-                currrentNjus.Add(new List<double>(fourierTransformBase));
-                for (int j = 0; j < fourierTransformBase; j++)
+                njus.Add(new List<double>(given.FourierTransformBase));
+                currrentNjus.Add(new List<double>(given.FourierTransformBase));
+                for (int j = 0; j < given.FourierTransformBase; j++)
                 {
                     njus[i].Add(default);
                     currrentNjus[i].Add(default);
@@ -170,7 +119,7 @@ namespace TelecomNetModelling
         private void GenerateSignalPowers()
         {
             signalPowers = new List<double>();
-            for (int i = 0; i < firstChannelNumber + carrierFrequencyMaxNumber; i++)
+            for (int i = 0; i < given.FirstChannelNumber + given.CarrierFrequencyMaxNumber; i++)
             {
                 signalPowers.Add(Math.Pow(10, 0.1 * (signalMask[i] + 80)));
             }
@@ -182,18 +131,18 @@ namespace TelecomNetModelling
         /// </summary>
         public void Execute()
        {
-           for (int currentSample = firstSample; currentSample <= lastSample; currentSample++)
+           for (int currentSample = given.FirstSample; currentSample <= given.LastSample; currentSample++)
            {
                DateTime sampleComputeStart = DateTime.Now;
                logger.LogInformation("Calculating LT = {currentSample} @ {start}", currentSample, sampleComputeStart);
                
-               for (int i = 0; i < fourierTransformBase; i++)
+               for (int i = 0; i < given.FourierTransformBase; i++)
                {
                    logger.LogInformation("Current array segment: {index}", i);
                    for (int j = 0; j <= i; j++)
                    {
                        // XXX: Nobody understands this check and action. Don't try to modify this section
-                       if (currentSample != firstSample && i != fourierTransformBase - 1 && j != fourierTransformBase - 1)
+                       if (currentSample != given.FirstSample && i != given.FourierTransformBase - 1 && j != given.FourierTransformBase - 1)
                        {
                            currrentNjus[i][j] = njus[i + 1][j + 1];
 
@@ -211,9 +160,9 @@ namespace TelecomNetModelling
 
                // NOTE: To "mirror" matrix triangles, we use separate(!) for loops.
                // It's non-destructive approach, until I receive proper consultation from scientists.
-               for (int i = 0; i < fourierTransformBase; i++)
+               for (int i = 0; i < given.FourierTransformBase; i++)
                {
-                   for (int j = 0; j < fourierTransformBase; j++)
+                   for (int j = 0; j < given.FourierTransformBase; j++)
                    {
                        if (i >= j)
                        {
@@ -227,7 +176,7 @@ namespace TelecomNetModelling
                }
 
                bool firstEntry = true;
-               for (int i = 0; i <= carrierFrequencyMaxNumber; i++)
+               for (int i = 0; i <= given.CarrierFrequencyMaxNumber; i++)
                {
                    double ratio = SNR(i);
 
@@ -263,11 +212,11 @@ namespace TelecomNetModelling
         public double InterferationNoisePower(int p)
         {
             double sum = 0;
-            for (int i = 0; i < fourierTransformBase; i++)
+            for (int i = 0; i < given.FourierTransformBase; i++)
             {
-                for (int j = 0; j < fourierTransformBase; j++)
+                for (int j = 0; j < given.FourierTransformBase; j++)
                 {
-                    sum += njus[i][j] * Math.Cos(2 * PI * (p + firstChannelNumber - 1) * (i - j) / fourierTransformBase);
+                    sum += njus[i][j] * Math.Cos(2 * PI * (p + given.FirstChannelNumber - 1) * (i - j) / given.FourierTransformBase);
                 }
             }
             return sum;
@@ -283,17 +232,17 @@ namespace TelecomNetModelling
         {
             Complex sum = new Complex();
             Complex J = new Complex(0, 1);
-            for (int i = 0; i < fourierTransformBase; i++)
+            for (int i = 0; i < given.FourierTransformBase; i++)
             {
                 sum += Complex.Multiply(impulseReactions[i],
                     Complex.Exp(
                         Complex.Multiply(-J,
-                            2.0 * PI * (double) (p + firstChannelNumber - 1) * (double) i / (double) fourierTransformBase
+                            2.0 * PI * (double) (p + given.FirstChannelNumber - 1) * (double) i / (double) given.FourierTransformBase
                         )
                     )
                 );
             }
-            return Math.Pow(Complex.Abs(sum), 2) * fourierTransformBase * fourierTransformBase / 2.0 * signalPowers[p + firstChannelNumber - 1];
+            return Math.Pow(Complex.Abs(sum), 2) * given.FourierTransformBase * given.FourierTransformBase / 2.0 * signalPowers[p + given.FirstChannelNumber - 1];
         }
 
         /// <summary>
