@@ -10,14 +10,10 @@ namespace ModelTelecomNetConsole.Signal
     public class TraditionalSignalStrategy : AccurateMathematic, ISignalStrategy
     {
         private GivenData given;
-        private List<double> impulseReactions;
-        private List<double> signalPowers;
 
-        public TraditionalSignalStrategy(GivenData given, List<double> impulseReactions, List<double> signalPowers)
+        public TraditionalSignalStrategy(GivenData given)
         {
             this.given = given;
-            this.impulseReactions = impulseReactions;
-            this.signalPowers = signalPowers;
         }
 
         /// <summary>
@@ -32,7 +28,7 @@ namespace ModelTelecomNetConsole.Signal
             Complex J = new Complex(0, 1);
             for (int i = 0; i < given.FourierTransformBase; i++)
             {
-                sum += Complex.Multiply(impulseReactions[i],
+                sum += Complex.Multiply(given.ImpulseReactions[i],
                     Complex.Exp(
                         Complex.Multiply(-J,
                             2.0 * PI * (double)(p + given.FirstChannelNumber - 1) * (double)i / (double)given.FourierTransformBase
@@ -40,7 +36,7 @@ namespace ModelTelecomNetConsole.Signal
                     )
                 );
             }
-            return Math.Pow(Complex.Abs(sum), 2) * given.FourierTransformBase * given.FourierTransformBase / 2.0 * signalPowers[p + given.FirstChannelNumber - 1];
+            return Math.Pow(Complex.Abs(sum), 2) * given.FourierTransformBase * given.FourierTransformBase / 2.0 * given.SignalPowers[p + given.FirstChannelNumber - 1];
         }
     }
 }
