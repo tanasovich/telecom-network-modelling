@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -52,6 +53,24 @@ namespace ModelTelecomNetConsole
         /// <remarks>Canonical name - <i>R</i></remarks>
         private readonly int impulseReactionLength;
 
+        /// <summary>
+        /// Impulse reactions' list.
+        /// </summary>
+        /// <remarks>Canonical name - <i>g</i></remarks>
+        private List<double>? impulseReactions;
+
+        /// <summary>
+        /// Signal powers' list.
+        /// </summary>
+        /// <remarks>Canonical name - <i>power</i></remarks>
+        private List<double>? signalPowers;
+
+        /// <summary>
+        /// Signal mask.
+        /// </summary>
+        /// <remarks>Canonical name - <i>PSD</i></remarks>
+        private List<double>? signalMask;
+
         public GivenData(int fourierTransformBase, int carrierFrequencyMaxNumber, int protectionIntervalSamplesNumber, int firstChannelNumber, int firstSample, int lastSample, int impulseReactionLength)
         {
             this.fourierTransformBase = fourierTransformBase;
@@ -83,5 +102,40 @@ namespace ModelTelecomNetConsole
 
         /// <inheritdoc cref="impulseReactionLength"/>
         public int ImpulseReactionLength => impulseReactionLength;
+
+        /// <inheritdoc cref="impulseReactions"/>
+        public List<double> ImpulseReactions
+        {
+            set => impulseReactions = value;
+            get => impulseReactions;
+        }
+
+        /// <inheritdoc cref="signalMask"/>
+        public List<double> SignalMask
+        {
+            set
+            {
+                signalMask = value;
+                signalPowers = GenerateSignalPowers();
+            }
+
+            get => signalMask;
+        }
+
+        /// <inheritdoc cref="signalPowers"/>
+        public List<double> SignalPowers
+        {
+            get => signalPowers;
+        }
+
+        private List<double> GenerateSignalPowers()
+        {
+            signalPowers = new List<double>();
+            for (int i = 0; i < firstChannelNumber + carrierFrequencyMaxNumber; i++)
+            {
+                signalPowers.Add(Math.Pow(10, 0.1 * (signalMask[i] + 80)));
+            }
+            return signalPowers;
+        }
     }
 }

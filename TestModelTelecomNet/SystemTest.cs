@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using ModelTelecomNetConsole;
 using Moq;
 using System.Globalization;
 using TelecomNetModelling;
@@ -18,13 +19,16 @@ namespace TestModelTelecomNet
             List<double> firstExpected = LoadDataFrom(Path.Combine("ExpectedData", "Traditional", "interf0.txt").ToString());
             List<double> secondExpected = LoadDataFrom(Path.Combine("ExpectedData", "Traditional", "interf150.txt").ToString());
 
-            Dictionary<string, List<double>> inputs = new Dictionary<string, List<double>>();
-            inputs["impulseReactions"] = LoadDataFrom(Path.Combine("TestData", "Traditional", "impulse-reactions.txt"));
-            inputs["signalMask"] = LoadDataFrom(Path.Combine("TestData", "Traditional", "mask.txt"));
-
             Directory.CreateDirectory("results");
 
-            NetworkValueCalculator calculator = new NetworkValueCalculator(inputs, Mock.Of<ILogger<NetworkValueCalculator>>());
+            GivenData given = new GivenData(512, 200, 32, 30, 0, 150, 60);
+            given.ImpulseReactions = LoadDataFrom(Path.Combine("TestData", "Traditional", "impulse-reactions.txt"));
+            given.SignalMask = LoadDataFrom(Path.Combine("TestData", "Traditional", "mask.txt"));
+
+            NetworkValueCalculator calculator = new NetworkValueCalculator(
+                given,
+                Mock.Of<ILogger<NetworkValueCalculator>>()
+            );
 
             // Act
             calculator.Execute();

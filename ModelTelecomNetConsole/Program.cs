@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-
+using ModelTelecomNetConsole;
 using TelecomNetModelling.Readers;
 
 namespace TelecomNetModelling
@@ -47,11 +47,22 @@ namespace TelecomNetModelling
                 { "signalMask", signalMask }
             };
 
+            GivenData given = new GivenData(
+                int.Parse(configuration["AppSettings:fourierTransformBase"]!),
+                int.Parse(configuration["AppSettings:carrierFrequencyMaxNumber"]!),
+                int.Parse(configuration["AppSettings:protectionIntervalSamplesNumber"]!),
+                int.Parse(configuration["AppSettings:firstChannelNumber"]!),
+                int.Parse(configuration["AppSettings:firstSample"]!),
+                int.Parse(configuration["AppSettings:lastSample"]!),
+                int.Parse(configuration["AppSettings:impulseReactionLength"]!)
+            );
+            given.ImpulseReactions = impulseReactions;
+            given.SignalMask = signalMask;
 
             NetworkValueCalculator calculator = new(
-                configuration,
-                inputs,
-                loggerFactory.CreateLogger<NetworkValueCalculator>()
+                given,
+                loggerFactory.CreateLogger<NetworkValueCalculator>(),
+                configuration["AppSettings:resultsDirectory"]!
             );
 
            DateTime computingStart = DateTime.Now;

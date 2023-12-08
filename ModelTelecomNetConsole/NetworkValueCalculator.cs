@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using ModelTelecomNetConsole;
@@ -14,24 +15,6 @@ namespace TelecomNetModelling
 
        private readonly ILogger logger;
        private GivenData given;
-       
-       /// <summary>
-       /// Impulse reactions' list.
-       /// </summary>
-       /// <remarks>Canonical name - <i>g</i></remarks>
-       private List<double> impulseReactions;
-       
-       /// <summary>
-       /// Signal powers' list.
-       /// </summary>
-       /// <remarks>Canonical name - <i>power</i></remarks>
-       private List<double> signalPowers;
-       
-       /// <summary>
-       /// Signal mask.
-       /// </summary>
-       /// <remarks>Canonical name - <i>PSD</i></remarks>
-       private List<double> signalMask;
 
        /// <summary>
        ///  Path to file results. Relative to working directory.
@@ -50,60 +33,65 @@ namespace TelecomNetModelling
        /// </summary>
        private  List<List<double>> currrentNjus;
        
-       private IInterferenceStrategy InterferenceStrategy;
-       private ISignalStrategy SignalStrategy;
+       private IInterferenceStrategy _interferenceStrategy;
+       private ISignalStrategy _signalStrategy;
+       
+       public IInterferenceStrategy InterferenceStrategy
+        {
+            get
+            {
+                return _interferenceStrategy;
+            }
+            set
+            {
+                _interferenceStrategy = value;
+            }
+        }
 
-       public NetworkValueCalculator(IConfiguration configuration,
-           Dictionary<string, List<double>> inputs, ILogger logger)
+        public ISignalStrategy SignalStrategy
+        {
+            get
+            {
+                return _signalStrategy;
+            }
+            set
+            {
+                _signalStrategy = value;
+            }
+        }
+
+       public NetworkValueCalculator(GivenData given, ILogger logger, string resultsDirectory)
         {
             this.logger = logger;
 
-            given = new GivenData(
-                int.Parse(configuration["AppSettings:fourierTransformBase"]!),
-                int.Parse(configuration["AppSettings:carrierFrequencyMaxNumber"]!),
-                int.Parse(configuration["AppSettings:protectionIntervalSamplesNumber"]!),
-                int.Parse(configuration["AppSettings:firstChannelNumber"]!),
-                int.Parse(configuration["AppSettings:firstSample"]!),
-                int.Parse(configuration["AppSettings:lastSample"]!),
-                int.Parse(configuration["AppSettings:impulseReactionLength"]!)
-            );
+            this.given = given;
 
-            impulseReactions = inputs["impulseReactions"];
-            signalMask = inputs["signalMask"];
-
-            resultsDirectory = configuration["AppSettings:resultsDirectory"]!;
-
-            GenerateSignalPowers();
+            this.resultsDirectory = resultsDirectory;
 
             njuCalculator = new TraditionalNjuCalculator(
-             given, impulseReactions, signalPowers
+             given, given.ImpulseReactions, given.SignalPowers
             );
 
             BuildNjuMatrixes();
 
-            InterferenceStrategy = new TraditionalInterferenceStrategy(given, njus);
-            SignalStrategy = new TraditionalSignalStrategy(given, impulseReactions, signalPowers);
+            _interferenceStrategy = new TraditionalInterferenceStrategy(given, njus);
+            _signalStrategy = new TraditionalSignalStrategy(given, given.ImpulseReactions, given.SignalPowers);
         }
 
-        public NetworkValueCalculator(Dictionary<string, List<double>> inputs, ILogger logger)
+        public NetworkValueCalculator(GivenData given, ILogger logger)
         {
-            given = new GivenData(512, 200, 32, 30, 0, 150, 60);
+            this.given = given;
             resultsDirectory = "results";
             this.logger = logger;
 
-            impulseReactions = inputs["impulseReactions"];
-            signalMask = inputs["signalMask"];
-
-            GenerateSignalPowers();
-
             njuCalculator = new TraditionalNjuCalculator(
-             given, impulseReactions, signalPowers
+             given, given.ImpulseReactions, given.SignalPowers
             );
 
             BuildNjuMatrixes();
 
-            InterferenceStrategy = new TraditionalInterferenceStrategy(given, njus);
-            SignalStrategy = new TraditionalSignalStrategy(given, impulseReactions, signalPowers);
+            _interferenceStrategy = new TraditionalInterferenceStrategy(given, njus);
+            _signalStrategy = new TraditionalSignalStrategy(given, given.ImpulseReactions, given.SignalPowers);
         }
 
         private void BuildNjuMatrixes()
@@ -120,16 +108,6 @@ namespace TelecomNetModelling
                     currrentNjus[i].Add(default);
                 }
             }
-        }
-
-        private void GenerateSignalPowers()
-        {
-            signalPowers = new List<double>();
-            for (int i = 0; i < given.FirstChannelNumber + given.CarrierFrequencyMaxNumber; i++)
-            {
-                signalPowers.Add(Math.Pow(10, 0.1 * (signalMask[i] + 80)));
-            }
-            logger.LogInformation("Calculated sinal powers (using mask).");
         }
 
         /// <summary>
@@ -218,7 +196,7 @@ namespace TelecomNetModelling
         public double SNR(int power)
         {
             double ratio;
-            ratio = Math.Sqrt(InterferenceStrategy.InterferationNoisePower(power) / SignalStrategy.SignalPower(power));
+            ratio = Math.Sqrt(_interferenceStrategy.InterferationNoisePower(power) / _signalStrategy.SignalPower(power));
             return ratio * 100.0;
         }
     }
