@@ -111,6 +111,8 @@ namespace TelecomNetModelling
                        if (currentSample != given.FirstSample && i != given.FourierTransformBase - 1 && j != given.FourierTransformBase - 1)
                        {
                            currrentNjus[i][j] = njus[i + 1][j + 1];
+                           njus[i][j] = currrentNjus[i][j];
+                           njus[j][i] = currrentNjus[i][j];
 
                            logger.LogTrace("Mystical check is done. Take bottom-right element from previous Nju matrix LT {currentSample}", currentSample);
                            logger.LogTrace("Mystical check indexes: i = {i}, j = {j}", i, j);
@@ -119,25 +121,10 @@ namespace TelecomNetModelling
                        }
                        
                        currrentNjus[i][j] = njuCalculator.Nju(i, j, currentSample);
+                       njus[i][j] = currrentNjus[i][j];
+                       njus[j][i] = currrentNjus[i][j];
 
                        logger.LogTrace("nju({i}, {j}) = {currentNju}", i, j, currrentNjus[i][j]);
-                   }
-               }
-
-               // NOTE: To "mirror" matrix triangles, we use separate(!) for loops.
-               // It's non-destructive approach, until I receive proper consultation from scientists.
-               for (int i = 0; i < given.FourierTransformBase; i++)
-               {
-                   for (int j = 0; j < given.FourierTransformBase; j++)
-                   {
-                       if (i >= j)
-                       {
-                           njus[i][j] = currrentNjus[i][j];
-                       }
-                       else
-                       {
-                           njus[i][j] = currrentNjus[j][i];
-                       }
                    }
                }
 
