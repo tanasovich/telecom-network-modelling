@@ -68,14 +68,12 @@ namespace TelecomNetModelling
 
             this.resultsDirectory = resultsDirectory;
 
-            njuCalculator = new TraditionalNjuCalculator(
-             given, given.ImpulseReactions, given.SignalPowers
-            );
+            njuCalculator = new TraditionalNjuCalculator(given);
 
             BuildNjuMatrixes();
 
             _interferenceStrategy = new TraditionalInterferenceStrategy(given, njus);
-            _signalStrategy = new TraditionalSignalStrategy(given, given.ImpulseReactions, given.SignalPowers);
+            _signalStrategy = new TraditionalSignalStrategy(given);
         }
 
         public NetworkValueCalculator(GivenData given, ILogger logger)
@@ -84,14 +82,12 @@ namespace TelecomNetModelling
             resultsDirectory = "results";
             this.logger = logger;
 
-            njuCalculator = new TraditionalNjuCalculator(
-             given, given.ImpulseReactions, given.SignalPowers
-            );
+            njuCalculator = new TraditionalNjuCalculator(given);
 
             BuildNjuMatrixes();
 
             _interferenceStrategy = new TraditionalInterferenceStrategy(given, njus);
-            _signalStrategy = new TraditionalSignalStrategy(given, given.ImpulseReactions, given.SignalPowers);
+            _signalStrategy = new TraditionalSignalStrategy(given);
         }
 
         private void BuildNjuMatrixes()
