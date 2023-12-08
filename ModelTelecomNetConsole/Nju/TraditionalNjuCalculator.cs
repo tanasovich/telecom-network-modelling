@@ -5,17 +5,11 @@ namespace ModelTelecomNetConsole.Nju
     public class TraditionalNjuCalculator : AccurateMathematic, INjuCalculator
     {
         private readonly GivenData given;
-        private readonly List<double> impulseReactions;
-        private readonly List<double> signalPowers;
 
         // TODO: Set logger
-        public TraditionalNjuCalculator(
-            GivenData given, List<double> impulseReactions,
-            List<double> signalPowers)
+        public TraditionalNjuCalculator(GivenData given)
         {
             this.given = given;
-            this.impulseReactions = impulseReactions;
-            this.signalPowers = signalPowers;
         }
 
         /// <inheritdoc cref="INjuCalculator.Nju(int, int, int)"/>
@@ -130,7 +124,7 @@ namespace ModelTelecomNetConsole.Nju
         /// <returns>weighted product</returns>
         private double WeightedImpulseReactionProduct(int i, int j, int sampleDifference)
         {
-            return impulseReactions[i] * impulseReactions[j] * SignalCorrelation(sampleDifference);
+            return given.ImpulseReactions[i] * given.ImpulseReactions[j] * SignalCorrelation(sampleDifference);
         }
 
         /// <summary>
@@ -144,7 +138,7 @@ namespace ModelTelecomNetConsole.Nju
             double sum = 0;
             for (int p = 1; p <= given.CarrierFrequencyMaxNumber; p++)
             {
-                sum += signalPowers[p + given.FirstChannelNumber - 1] * Math.Cos(PI * sampleDifference * (p + given.FirstChannelNumber - 1) / given.CarrierFrequencyMaxNumber);
+                sum += given.SignalPowers[p + given.FirstChannelNumber - 1] * Math.Cos(PI * sampleDifference * (p + given.FirstChannelNumber - 1) / given.CarrierFrequencyMaxNumber);
             }
             return sum;
         }
