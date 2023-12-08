@@ -9,12 +9,10 @@ namespace ModelTelecomNetConsole.Interference
     public class TraditionalInterferenceStrategy: AccurateMathematic, IInterferenceStrategy
     {
         private GivenData given;
-        private List<List<double>> njus;
 
-        public TraditionalInterferenceStrategy(GivenData given, List<List<double>> njus)
+        public TraditionalInterferenceStrategy(GivenData given)
         {
             this.given = given;
-            this.njus = njus;
         }
 
         /// <summary>
@@ -23,7 +21,7 @@ namespace ModelTelecomNetConsole.Interference
         /// <param name="p">signal power</param>
         /// <returns>noise power</returns>
         /// <remarks>Canonical name - <i>Interf</i></remarks>
-        public double InterferationNoisePower(int p)
+        public double InterferationNoisePower(int p, List<List<double>> njus)
         {
             double sum = 0;
             for (int i = 0; i < given.FourierTransformBase; i++)

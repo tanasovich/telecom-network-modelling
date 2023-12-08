@@ -72,7 +72,7 @@ namespace TelecomNetModelling
 
             BuildNjuMatrixes();
 
-            _interferenceStrategy = new TraditionalInterferenceStrategy(given, njus);
+            _interferenceStrategy = new TraditionalInterferenceStrategy(given);
             _signalStrategy = new TraditionalSignalStrategy(given);
         }
 
@@ -178,7 +178,7 @@ namespace TelecomNetModelling
         public double SNR(int power)
         {
             double ratio;
-            ratio = Math.Sqrt(_interferenceStrategy.InterferationNoisePower(power) / _signalStrategy.SignalPower(power));
+            ratio = Math.Sqrt(_interferenceStrategy.InterferationNoisePower(power, njus) / _signalStrategy.SignalPower(power));
             return ratio * 100.0;
         }
     }

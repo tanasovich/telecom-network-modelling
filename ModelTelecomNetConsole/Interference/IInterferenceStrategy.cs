@@ -8,6 +8,6 @@ namespace ModelTelecomNetConsole.Interference
 {
     public interface IInterferenceStrategy
     {
-        double InterferationNoisePower(int p);
+        double InterferationNoisePower(int p, List<List<double>> njus);
     }
 }
