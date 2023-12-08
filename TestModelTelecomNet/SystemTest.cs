@@ -27,7 +27,8 @@ namespace TestModelTelecomNet
 
             NetworkValueCalculator calculator = new NetworkValueCalculator(
                 given,
-                Mock.Of<ILogger<NetworkValueCalculator>>()
+                Mock.Of<ILogger<NetworkValueCalculator>>(),
+                "results"
             );
 
             // Act

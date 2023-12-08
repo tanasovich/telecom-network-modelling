@@ -76,20 +76,6 @@ namespace TelecomNetModelling
             _signalStrategy = new TraditionalSignalStrategy(given);
         }
 
-        public NetworkValueCalculator(GivenData given, ILogger logger)
-        {
-            this.given = given;
-            resultsDirectory = "results";
-            this.logger = logger;
-
-            njuCalculator = new TraditionalNjuCalculator(given);
-
-            BuildNjuMatrixes();
-
-            _interferenceStrategy = new TraditionalInterferenceStrategy(given, njus);
-            _signalStrategy = new TraditionalSignalStrategy(given);
-        }
-
         private void BuildNjuMatrixes()
         {
             njus = new List<List<double>>(given.FourierTransformBase);
