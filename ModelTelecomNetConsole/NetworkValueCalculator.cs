@@ -26,12 +26,12 @@ namespace TelecomNetModelling
        /// <summary>
        /// Interferation model matrix for previous sample.
        /// </summary>
-       private  List<List<double>> njus;
+       private  double[,] njus;
        
        /// <summary>
        /// Interferation model matrix for current sample.
        /// </summary>
-       private  List<List<double>> currrentNjus;
+       private  double[,] currrentNjus;
        
        private IInterferenceStrategy _interferenceStrategy;
        private ISignalStrategy _signalStrategy;
@@ -70,26 +70,16 @@ namespace TelecomNetModelling
 
             njuCalculator = new TraditionalNjuCalculator(given);
 
-            BuildNjuMatrixes();
+            BuildNjuMatrixes(out njus, out currrentNjus);
 
             _interferenceStrategy = new TraditionalInterferenceStrategy(given);
             _signalStrategy = new TraditionalSignalStrategy(given);
         }
 
-        private void BuildNjuMatrixes()
+        private void BuildNjuMatrixes(out double[,] mu, out double[,] currentMu)
         {
-            njus = new List<List<double>>(given.FourierTransformBase);
-            currrentNjus = new List<List<double>>(given.FourierTransformBase);
-            for (int i = 0; i < given.FourierTransformBase; i++)
-            {
-                njus.Add(new List<double>(given.FourierTransformBase));
-                currrentNjus.Add(new List<double>(given.FourierTransformBase));
-                for (int j = 0; j < given.FourierTransformBase; j++)
-                {
-                    njus[i].Add(default);
-                    currrentNjus[i].Add(default);
-                }
-            }
+            mu = new double[given.FourierTransformBase, given.FourierTransformBase];
+            currentMu = new double[given.FourierTransformBase, given.FourierTransformBase];
         }
 
         /// <summary>
@@ -110,9 +100,9 @@ namespace TelecomNetModelling
                        // XXX: Nobody understands this check and action. Don't try to modify this section
                        if (currentSample != given.FirstSample && i != given.FourierTransformBase - 1 && j != given.FourierTransformBase - 1)
                        {
-                           currrentNjus[i][j] = njus[i + 1][j + 1];
-                           njus[i][j] = currrentNjus[i][j];
-                           njus[j][i] = currrentNjus[i][j];
+                           currrentNjus[i, j] = njus[i + 1, j + 1];
+                           njus[i, j] = currrentNjus[i, j];
+                           njus[j, i] = currrentNjus[i, j];
 
                            logger.LogTrace("Mystical check is done. Take bottom-right element from previous Nju matrix LT {currentSample}", currentSample);
                            logger.LogTrace("Mystical check indexes: i = {i}, j = {j}", i, j);
@@ -120,11 +110,11 @@ namespace TelecomNetModelling
                            continue;
                        }
                        
-                       currrentNjus[i][j] = njuCalculator.Nju(i, j, currentSample);
-                       njus[i][j] = currrentNjus[i][j];
-                       njus[j][i] = currrentNjus[i][j];
+                       currrentNjus[i, j] = njuCalculator.Nju(i, j, currentSample);
+                       njus[i, j] = currrentNjus[i, j];
+                       njus[j, i] = currrentNjus[i, j];
 
-                       logger.LogTrace("nju({i}, {j}) = {currentNju}", i, j, currrentNjus[i][j]);
+                       logger.LogTrace("nju({i}, {j}) = {currentNju}", i, j, currrentNjus[i, j]);
                    }
                }
 

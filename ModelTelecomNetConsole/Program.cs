@@ -56,8 +56,8 @@ namespace TelecomNetModelling
                 int.Parse(configuration["AppSettings:lastSample"]!),
                 int.Parse(configuration["AppSettings:impulseReactionLength"]!)
             );
-            given.ImpulseReactions = impulseReactions;
-            given.SignalMask = signalMask;
+            given.ImpulseReactions = impulseReactions.ToArray<double>();
+            given.SignalMask = signalMask.ToArray<double>();
 
             NetworkValueCalculator calculator = new(
                 given,

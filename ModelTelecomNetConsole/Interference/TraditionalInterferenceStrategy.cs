@@ -21,14 +21,14 @@ namespace ModelTelecomNetConsole.Interference
         /// <param name="p">signal power</param>
         /// <returns>noise power</returns>
         /// <remarks>Canonical name - <i>Interf</i></remarks>
-        public double InterferationNoisePower(int p, List<List<double>> njus)
+        public double InterferationNoisePower(int p, double[,] njus)
         {
             double sum = 0;
             for (int i = 0; i < given.FourierTransformBase; i++)
             {
                 for (int j = 0; j < given.FourierTransformBase; j++)
                 {
-                    sum += njus[i][j] * Math.Cos(2 * PI * (p + given.FirstChannelNumber - 1) * (i - j) / given.FourierTransformBase);
+                    sum += njus[i, j] * Math.Cos(2 * PI * (p + given.FirstChannelNumber - 1) * (i - j) / given.FourierTransformBase);
                 }
             }
             return sum;

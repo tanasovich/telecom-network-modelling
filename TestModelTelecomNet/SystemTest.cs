@@ -22,8 +22,8 @@ namespace TestModelTelecomNet
             Directory.CreateDirectory("results");
 
             GivenData given = new GivenData(512, 200, 32, 30, 0, 150, 60);
-            given.ImpulseReactions = LoadDataFrom(Path.Combine("TestData", "Traditional", "impulse-reactions.txt"));
-            given.SignalMask = LoadDataFrom(Path.Combine("TestData", "Traditional", "mask.txt"));
+            given.ImpulseReactions = LoadDataFrom(Path.Combine("TestData", "Traditional", "impulse-reactions.txt")).ToArray<double>();
+            given.SignalMask = LoadDataFrom(Path.Combine("TestData", "Traditional", "mask.txt")).ToArray<double>();
 
             NetworkValueCalculator calculator = new NetworkValueCalculator(
                 given,
